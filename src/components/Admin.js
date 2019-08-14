@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Admin.css';
 import * as constants from '../constants/Stages.js';
 import {db} from '../firebase.js';
 
@@ -17,7 +18,8 @@ class Admin extends React.Component {
         currentQuestion: 1,
         currentQuestionStage: 0,
         currentQuestionRef: null,
-        questions: []
+        questions: [],
+        unsubscribeCallbacks: []
     }
 
     advanceQuestionStage() {
@@ -64,7 +66,10 @@ class Admin extends React.Component {
 
     resetGameState() {
         return () => {
-            this.state.currentQuestionRef.update({question: 1});
+            this.state.currentQuestionRef.update({
+                question: 1, 
+                questionStage: constants.QuestionStage.READ_QUESTION
+            });
             this.state.stageRef.update({id: constants.SPLASH});
         }
     }
@@ -72,7 +77,7 @@ class Admin extends React.Component {
     componentDidMount() {
         let self = this;
 
-        db.collection("questions").onSnapshot(snapshot => {
+        const unsubscribeQuestion = db.collection("questions").onSnapshot(snapshot => {
             let questions = [];
             snapshot.forEach(doc => {
                 questions.push(doc.data());
@@ -80,7 +85,7 @@ class Admin extends React.Component {
             self.setState({questions : questions});
         });
 
-        db.collection("state").doc("current").onSnapshot(snapshot => {
+        const unsubscribeState = db.collection("state").doc("current").onSnapshot(snapshot => {
             const currentState = snapshot.data();
             self.setState({
                 currentQuestion: currentState.question,
@@ -89,17 +94,27 @@ class Admin extends React.Component {
             });
         });
         
-        db.collection("state").doc("stage").onSnapshot(snapshot => {
+        const unsubscribeStage = db.collection("state").doc("stage").onSnapshot(snapshot => {
             const currentStage = snapshot.data();
             self.setState({
                 stage: currentStage.id, 
                 stageRef: snapshot.ref
             });
         });
+    
+        self.setState({unsubscribeCallbacks: [unsubscribeQuestion, unsubscribeState, unsubscribeStage]});
+    }
+
+    componentWillUnmount() {
+        this.state.unsubscribeCallbacks.forEach(cb => cb());
     }
 
     stageTransition(newStage) {
         return () => this.state.stageRef.update({id: newStage});
+    }
+
+    isSelected(stageId) {
+        return stageId === this.state.stage ? 'selected' : 'regular';
     }
     
     render() {
@@ -109,16 +124,15 @@ class Admin extends React.Component {
 
         return (
             <div>
-                <h1>Question Stage: {constants.questionStageName(this.state.currentQuestionStage)}</h1>
-                <p>Master Stage: {constants.stageName(this.state.stage)}</p>
-                <button onClick={this.stageTransition(constants.SPLASH)}>Splash</button>
-                <button onClick={this.stageTransition(constants.CHARACTER_SELECT)}>Character Select</button>
-                <button onClick={this.stageTransition(constants.QUIZ)}>Quiz</button>
-                <button onClick={this.stageTransition(constants.LEADERBOARD)}>Leaderboard</button>                
+                <h2>Question Stage: {constants.questionStageName(this.state.currentQuestionStage)}</h2>
+                <button className={`button -${this.isSelected(constants.SPLASH)}`} onClick={this.stageTransition(constants.SPLASH)}>Splash</button>
+                <button className={`button -${this.isSelected(constants.CHARACTER_SELECT)}`} onClick={this.stageTransition(constants.CHARACTER_SELECT)}>Character Select</button>
+                <button className={`button -${this.isSelected(constants.QUIZ)}`} onClick={this.stageTransition(constants.QUIZ)}>Quiz</button>
+                <button className={`button -${this.isSelected(constants.LEADERBOARD)}`} onClick={this.stageTransition(constants.LEADERBOARD)}>Leaderboard</button>                
                 <ul style={questionList}>{questions}</ul>
-                <button onClick={this.backtrackQuestionStage()}>Previous</button>
-                <button onClick={this.advanceQuestionStage()}>Next</button>
-                <button onClick={this.resetGameState()}>Reset</button>
+                <button className={`button -regular`} onClick={this.backtrackQuestionStage()}>Previous</button>
+                <button className={`button -regular`} onClick={this.advanceQuestionStage()}>Next</button>
+                <button className={`button -regular`} onClick={this.resetGameState()}>Reset</button>
             </div>
         );
     }

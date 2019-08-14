@@ -1,11 +1,11 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Splash from './pages/Splash.js';
-import Admin from './pages/Admin.js';
-import CharacterSelect from './pages/CharacterSelect.js';
-import Quiz from './pages/Quiz.js';
-import Leaderboard from './pages/Leaderboard.js';
+import Splash from './components/Splash.js';
+import Admin from './components/Admin.js';
+import CharacterSelect from './components/CharacterSelect.js';
+import Quiz from './components/Quiz.js';
+import Leaderboard from './components/Leaderboard.js';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import {db} from './firebase.js';
 import * as constants from './constants/Stages.js';
