@@ -16,11 +16,20 @@ class Admin extends React.Component {
         questions: []
     }
 
-    navigateQuestion(next) {
+    advanceQuestionStage() {
         return () => {
-            const currentId = this.state.currentQuestion;
-            if (next ? currentId < this.state.questions.length : currentId > 1) {          
-                this.state.currentQuestionRef.update({question: currentId + (next ? 1 : -1)})
+            const currentQuestion = this.state.currentQuestion;
+            if (currentQuestion < this.state.questions.length) {
+                this.state.currentQuestionRef.update({question: currentQuestion + 1});
+            }
+        }
+    }
+
+    backtrackQuestionStage() {
+        return () => {
+            const currentQuestion = this.state.currentQuestion;
+            if (currentQuestion > 1) {
+                this.state.currentQuestionRef.update({question: currentQuestion - 1});
             }
         }
     }
@@ -77,8 +86,8 @@ class Admin extends React.Component {
                 <button onClick={this.stageTransition(constants.QUIZ)}>Quiz</button>
                 <button onClick={this.stageTransition(constants.LEADERBOARD)}>Leaderboard</button>                
                 <ul style={questionList}>{questions}</ul>
-                <button onClick={this.navigateQuestion(false)}>Previous</button>
-                <button onClick={this.navigateQuestion(true)}>Next</button>
+                <button onClick={this.backtrackQuestionStage()}>Previous</button>
+                <button onClick={this.advanceQuestionStage()}>Next</button>
                 <button onClick={this.resetGameState()}>Reset</button>
             </div>
         );
