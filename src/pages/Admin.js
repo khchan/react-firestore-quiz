@@ -6,22 +6,59 @@ const questionList = {
     listStyle: 'none'
 };
 
+const MIN_QUESTION_STAGE = constants.QuestionStage.READ_QUESTION;
+const MAX_QUESTION_STAGE = constants.QuestionStage.READ_RESULTS;
+
 class Admin extends React.Component {
     
     state = {
         stage: constants.SPLASH,
         stageRef: null,
         currentQuestion: 1,
+        currentQuestionStage: 0,
         currentQuestionRef: null,
         questions: []
     }
 
-    navigateQuestion(next) {
+    advanceQuestionStage() {
         return () => {
-            const currentId = this.state.currentQuestion;
-            if (next ? currentId < this.state.questions.length : currentId > 1) {          
-                this.state.currentQuestionRef.update({question: currentId + (next ? 1 : -1)})
+            const currentQuestion = this.state.currentQuestion;
+            let nextQuestion = currentQuestion;
+            let nextQuestionStage = this.state.currentQuestionStage + 1;
+            if (nextQuestionStage > MAX_QUESTION_STAGE) {
+                if (currentQuestion < this.state.questions.length) {
+                    nextQuestion = currentQuestion + 1;
+                    nextQuestionStage = MIN_QUESTION_STAGE;
+                } else { // clamp nextQuestionStage
+                    nextQuestionStage = MAX_QUESTION_STAGE;
+                }
             }
+
+            this.state.currentQuestionRef.update({
+                question: nextQuestion,
+                questionStage: nextQuestionStage,
+            });
+        }
+    }
+
+    backtrackQuestionStage() {
+        return () => {
+            const currentQuestion = this.state.currentQuestion;
+            let prevQuestion = currentQuestion;
+            let prevQuestionStage = this.state.currentQuestionStage - 1;
+            if (prevQuestionStage < MIN_QUESTION_STAGE) {
+                if (currentQuestion > 1) {
+                    prevQuestion = currentQuestion - 1;
+                    prevQuestionStage = MAX_QUESTION_STAGE;
+                } else { // clamp prevQuestionStage
+                    prevQuestionStage = MIN_QUESTION_STAGE;
+                }
+            }
+
+            this.state.currentQuestionRef.update({
+                question: prevQuestion,
+                questionStage: prevQuestionStage,
+            });
         }
     }
 
@@ -47,6 +84,7 @@ class Admin extends React.Component {
             const currentState = snapshot.data();
             self.setState({
                 currentQuestion: currentState.question,
+                currentQuestionStage: currentState.questionStage,
                 currentQuestionRef: snapshot.ref
             });
         });
@@ -71,14 +109,15 @@ class Admin extends React.Component {
 
         return (
             <div>
-                <h1>Current Stage: {constants.stageName(this.state.stage)}</h1>
+                <h1>Question Stage: {constants.questionStageName(this.state.currentQuestionStage)}</h1>
+                <p>Master Stage: {constants.stageName(this.state.stage)}</p>
                 <button onClick={this.stageTransition(constants.SPLASH)}>Splash</button>
                 <button onClick={this.stageTransition(constants.CHARACTER_SELECT)}>Character Select</button>
                 <button onClick={this.stageTransition(constants.QUIZ)}>Quiz</button>
                 <button onClick={this.stageTransition(constants.LEADERBOARD)}>Leaderboard</button>                
                 <ul style={questionList}>{questions}</ul>
-                <button onClick={this.navigateQuestion(false)}>Previous</button>
-                <button onClick={this.navigateQuestion(true)}>Next</button>
+                <button onClick={this.backtrackQuestionStage()}>Previous</button>
+                <button onClick={this.advanceQuestionStage()}>Next</button>
                 <button onClick={this.resetGameState()}>Reset</button>
             </div>
         );
