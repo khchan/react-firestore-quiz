@@ -1,7 +1,8 @@
 import React from 'react';
 import '../styles/Admin.css';
 import * as constants from '../constants/Stages.js';
-import {db, FieldValue} from '../firebase.js';
+import * as usertypes from '../constants/UserTypes.js';
+import {auth, db, FieldValue} from '../firebase.js';
 
 const questionList = {
     listStyle: 'none'
@@ -159,6 +160,19 @@ class Admin extends React.Component {
         });
     
         self.setState({unsubscribeCallbacks: [unsubscribeQuestion, unsubscribeState, unsubscribeStage]});
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                let userRef = db.collection('users').doc(user.uid);
+                userRef.get().then(doc => {
+                    if (doc.exists && doc.data().type !== usertypes.ADMIN) {
+                        userRef.update({
+                            type: usertypes.ADMIN,
+                        });
+                    }
+                });
+            }
+        });
     }
 
     componentWillUnmount() {
