@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Splash from './components/Splash.js';
 import Admin from './components/Admin.js';
@@ -7,7 +6,7 @@ import CharacterSelect from './components/CharacterSelect.js';
 import Quiz from './components/Quiz.js';
 import Leaderboard from './components/Leaderboard.js';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import {db} from './firebase.js';
+import {auth, db} from './firebase.js';
 import * as constants from './constants/Stages.js';
 
 class App extends React.Component {
@@ -19,6 +18,32 @@ class App extends React.Component {
 
   componentDidMount() {
     let self = this;
+
+    auth.signInAnonymously().catch(error => {
+        // unable to sign in!
+        console.log(error.code);
+        console.log(error.message);
+    });
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            let userRef = db.collection('users').doc(user.uid);
+            userRef.get().then(doc => {
+                if (!doc.exists) {
+                    // this is a new user - setup
+                    userRef.set({
+                        type: "Spectator",
+                        profile: null,
+                    });
+                } else {
+                    // this is an existing user, read persisted data
+                }
+            });
+            // ...
+        } else {
+            // User is signed out.
+        }
+    });
     
     db.collection("state").doc("stage").onSnapshot(snapshot => {
         const currentStage = snapshot.data();
