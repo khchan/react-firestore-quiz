@@ -8,6 +8,7 @@ import Leaderboard from './components/Leaderboard.js';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import {auth, db} from './firebase.js';
 import * as constants from './constants/Stages.js';
+import * as usertypes from './constants/UserTypes.js';
 
 class App extends React.Component {
   
@@ -27,12 +28,12 @@ class App extends React.Component {
 
     auth.onAuthStateChanged((user) => {
         if (user) {
-            let userRef = db.collection('users').doc(user.uid);
-            userRef.get().then(doc => {
+            let sessionRef = db.collection('sessions').doc(user.uid);
+            sessionRef.get().then(doc => {
                 if (!doc.exists) {
                     // this is a new user - setup
-                    userRef.set({
-                        type: "Spectator",
+                    sessionRef.set({
+                        type: usertypes.SPECTATOR,
                         profile: null,
                     });
                 } else {

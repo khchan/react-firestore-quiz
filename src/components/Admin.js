@@ -163,10 +163,10 @@ class Admin extends React.Component {
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                let userRef = db.collection('users').doc(user.uid);
-                userRef.get().then(doc => {
+                let sessionRef = db.collection('sessions').doc(user.uid);
+                sessionRef.get().then(doc => {
                     if (doc.exists && doc.data().type !== usertypes.ADMIN) {
-                        userRef.update({
+                        sessionRef.update({
                             type: usertypes.ADMIN,
                         });
                     }
