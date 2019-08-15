@@ -1,21 +1,44 @@
 import React from 'react';
 import '../styles/CharacterSelect.css';
+import { Profiles } from '../constants/Profiles.js';
 
 class CharacterSelect extends React.Component {
-    
+
     state = {
-        images: []
+        selectedProfile: null,
+        profiles: Profiles
     }
-    
+
+    selectCharacter(profile) {
+        this.setState({selectedProfile: profile});
+    }
+
+    filterProfiles = (event) => {
+        let filtered = Profiles.filter(profile => {
+            let profileName = profile.firstName.toLowerCase() + profile.lastName.toLowerCase() + profile.association.toLowerCase()
+            return profileName.indexOf(event.target.value.toLowerCase()) !== -1;
+        });
+
+        this.setState({ profiles: filtered });
+    }
+
     render() {
-        const images = Array.from({ length: 30 }).map((u, i) => {
-            return <img key={`image-${i}`} alt="img" src={'http://placekitten.com/100/100'}></img>;
+        const images = this.state.profiles.map(profile => {
+            const profileName = `${profile.firstName}-${profile.lastName}`;
+            return (
+                <div className='card' key={profileName} onClick={() => this.selectCharacter(profile)}>
+                    <img alt='Avatar' src={profile.img}></img>
+                    <div className="text">
+                        <span>{profile.firstName}<br />{profile.lastName}</span>
+                    </div>
+                </div>
+            );
         });
 
         return (
             <div>
-                <h2>Character Select</h2>
-                {images}
+                <input type='text' className='search' placeholder='&#xE11A;Character Select' onChange={this.filterProfiles} />
+                <div className="cards">{images}</div>
             </div>
         );
     }

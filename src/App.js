@@ -42,7 +42,6 @@ class App extends React.Component {
         <div>
           <div className="App">
             <header className="App-header">
-              <img src={logo} className="App-logo" alt="logo" />
               <Route path="/" exact component={this.state.component} />
               <Route path="/admin/" component={Admin} />
             </header>

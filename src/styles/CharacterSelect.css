@@ -1,4 +1,33 @@
-img {
-    padding-right: 10px;
-    padding-bottom: 5px;
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    text-align: center;
+    justify-content: center;
+}
+
+.card {
+    flex: 0 0 100px;
+    margin: 10px;
+    box-shadow: 2px 2px 6px 0px  rgba(0,0,0,0.3);
+}
+
+.card img {
+    max-width: 100%;
+}
+
+.card .text {
+    padding: 0 20px 10px;
+    font-size: 16px;
+}
+
+.search {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 45px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Helvetica', 'Segoe UI Symbol'
 }
