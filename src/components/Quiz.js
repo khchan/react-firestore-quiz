@@ -2,13 +2,43 @@ import React from 'react';
 import {db} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
 
+const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
+
 class Quiz extends React.Component {
 
     state = {
         currentQuestion: 1,
         questionStage: 0,
         questions: [],
-        people: {}
+        people: {},
+
+        // local countdown timer state
+        endTime: 0, // epoch seconds
+        localCountdownSeconds: -1,
+        localCountdownIntervalID: -1,
+    }
+
+    beginCountdown() {
+        let localCountdownIntervalID = setInterval(() => {
+            let now = new Date().getTime();
+            let end = new Date(0);
+            end.setUTCSeconds(this.state.endTime);
+            let dt = end - now;
+            let seconds = Math.max(0, Math.floor((dt % (1000 * 60)) / 1000));
+            this.setState({ localCountdownSeconds: seconds });
+            if (dt < 0) {
+                this.resetCountdown();
+            }
+        }, 1000);
+
+        this.setState({
+            localCountdownIntervalID: localCountdownIntervalID,
+        });
+    }
+
+    resetCountdown() {
+        clearInterval(this.state.localCountdownIntervalID);
+        this.setState({ localCountdownSeconds: -1 });
     }
 
     componentDidMount() {
@@ -31,10 +61,34 @@ class Quiz extends React.Component {
 
         db.collection("state").doc("current").onSnapshot(snapshot => {
             const currentState = snapshot.data();
-            self.setState({currentQuestion: currentState.question});
-            self.setState({questionStage: currentState.questionStage});
+            const endTime = currentState.startTime ?
+                            currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :
+                            -1;
+            self.setState({currentQuestion : currentState.question,
+                           questionStage   : currentState.questionStage,
+                           endTime         : endTime,});
+
+            if (self.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
+                console.log("beginning countdown");
+                self.beginCountdown();
+            } else {
+                self.resetCountdown();
+            }
         });
-      }
+    }
+
+    isCountingDown() {
+        return this.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER &&
+               this.state.localCountdownSeconds >= 0; // don't render when our countdown is not properly initialized
+    }
+
+    isOutOfTime() {
+        let now = new Date().getTime();
+        let end = new Date(0);
+        end.setUTCSeconds(this.state.endTime);
+        return this.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER &&
+               now > end;
+    }
 
     render() {
         const question = this.state.questions
@@ -58,9 +112,11 @@ class Quiz extends React.Component {
                 return (
                     <div>
                         <p>Question: {this.state.currentQuestion}/{this.state.questions.length}</p>
+                        {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
+                        {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
                         {questionText}
                         {answers.map(a => (
-                            <div>{a.displayName}</div>
+                            <button className={`button -regular`}>{a.displayName}</button>
                         ))}
                     </div>
                 );
