@@ -40,6 +40,29 @@ body {
   }
 }
 
+@font-face {
+  font-family: 'Question Serif';
+  font-style: normal;
+  src: url('./fonts/Chunkfive.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Title Sans';
+  font-style: normal;
+  src: url('./fonts/sacramento.ttf') format('truetype');
+}
+
+.title-text {
+  font-family: 'Title Sans';
+  font-size: calc(32px + 2vmin);
+  margin: 0;
+}
+
+.question-text {
+  font-family: 'Question Serif';
+  font-size: calc(16px + 2vmin);
+}
+
 .question-count-intro {
   opacity: 0;
   animation-fill-mode: forwards;

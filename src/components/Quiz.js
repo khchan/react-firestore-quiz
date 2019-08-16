@@ -4,6 +4,13 @@ import * as constants from '../constants/Stages.js';
 
 const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
 
+function wordify(num) {
+    const words = [ "Zero", "One", "Two", "Three", "Four", "Five", "Six"
+                  , "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"
+                  , "Thirteen", "Fourteen" ];
+    return num >= words.length ? num : words[num];
+}
+
 class Quiz extends React.Component {
 
     state = {
@@ -104,17 +111,17 @@ class Quiz extends React.Component {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
-                        <p className="question-count-intro">Question {this.state.currentQuestion}</p>
-                        <p className="question-intro">{questionText}</p>
+                        <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="question-intro question-text">{questionText}</p>
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
                 return (
                     <div>
-                        <p>Question {this.state.currentQuestion}</p>
+                        <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
                         {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
                         {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
-                        {questionText}
+                        <p className="question-text">{questionText}</p>
                         {answers.map(a => (
                             <button className={`button -regular`}>{a.displayName}</button>
                         ))}
@@ -124,7 +131,7 @@ class Quiz extends React.Component {
                 return (
                     <div>
                         <p>Results (TODO)</p>
-                        {questionText}
+                        <p className="question-text">{questionText}</p>
                     </div>
                 );
             default:
