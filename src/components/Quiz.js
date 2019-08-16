@@ -121,7 +121,7 @@ class Quiz extends React.Component {
                     <div>
                         <style>{`
                         :root {
-                            --countdown: ${ANSWER_COUNTDOWN_DURATION + "s"};
+                            --countdown: ${this.isCountingDown() ? ANSWER_COUNTDOWN_DURATION + "s" : "0s"};
                         }`}</style>
                         <div id="countdown-bar"></div>
                         {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
