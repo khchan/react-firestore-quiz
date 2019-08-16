@@ -104,14 +104,14 @@ class Quiz extends React.Component {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
-                        <p>Question {this.state.currentQuestion}</p>
-                        {questionText}
+                        <p className="question-count-intro">Question {this.state.currentQuestion}</p>
+                        <p className="question-intro">{questionText}</p>
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
                 return (
                     <div>
-                        <p class="question-intro">Question {this.state.currentQuestion}</p>
+                        <p>Question {this.state.currentQuestion}</p>
                         {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
                         {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
                         {questionText}
