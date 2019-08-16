@@ -1,0 +1,20 @@
+#timer-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: white;
+    height: calc(1px + 0.5vmin);
+    animation-duration: var(--countdown);
+    animation-name: shrink;
+    animation-timing-function: linear;
+}
+
+@keyframes shrink {
+  0% {
+    width: 100%;
+  }
+
+  100% {
+    width: 0%;
+  }
+}

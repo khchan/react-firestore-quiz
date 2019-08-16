@@ -36,3 +36,6 @@
     color: var(--color-snow);
     background: var(--color-grass);
 }
+
+.button.-quiz-answer {
+}

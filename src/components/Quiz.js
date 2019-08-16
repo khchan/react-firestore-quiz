@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Quiz.css';
 import {db} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
 
@@ -116,8 +117,14 @@ class Quiz extends React.Component {
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
+                // weird, probably a hack: injecting CSS variable for countdown time
                 return (
                     <div>
+                        <style>{`
+                        :root {
+                            --countdown: ${ANSWER_COUNTDOWN_DURATION + "s"};
+                        }`}</style>
+                        <div id="timer-bar"></div>
                         <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
                         {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
                         {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
