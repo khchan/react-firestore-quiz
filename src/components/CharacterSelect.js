@@ -2,20 +2,26 @@ import React from 'react';
 import '../styles/Buttons.css';
 import '../styles/CharacterSelect.css';
 import '../styles/Grid.css';
-import { Profiles } from '../constants/Profiles.js';
+import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 class CharacterSelect extends React.Component {
 
-    state = {
-        selectedProfile: null,
-        profiles: Profiles
+    constructor(props) {
+        super(props);
+        const existingProfile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY) || null);
+        this.state = {
+            selectedProfile: existingProfile,
+            profiles: existingProfile ? [existingProfile] : Profiles
+        };
     }
 
     toggleCharacterSelect(profile) {
         if (this.state.selectedProfile && this.state.selectedProfile.img === profile.img) {
             this.setState({ selectedProfile: null, profiles: Profiles });
+            localStorage.removeItem(SELECTED_PROFILE_LS_KEY);
         } else {
             this.setState({ selectedProfile: profile, profiles: [profile] });
+            localStorage.setItem(SELECTED_PROFILE_LS_KEY, JSON.stringify(profile));
         }
     }
 
@@ -48,19 +54,16 @@ class CharacterSelect extends React.Component {
     }
 
     render() {
-        let self = this;
         const selectedProfile = this.state.selectedProfile;
-        const profileFullName = selectedProfile ? <h2>{selectedProfile.firstName} {selectedProfile.lastName}</h2> : null;
+        const profileFullName = selectedProfile ? <h2>{selectedProfile.firstName} {selectedProfile.lastName}</h2> : <h2>Character Select</h2>;
 
         return (
-            <div className='character-select-container'>
-                <input type='text' className={`search ${selectedProfile ? 'hide' : ''}`}
-                    placeholder='Search' onChange={this.filterProfiles} />
-                {profileFullName}
-                <div className="container">
-                    <div className="grid-row">
-                        {this.state.profiles.map(profile => this.mapProfileToCard(this.state, profile))}
-                    </div>
+            <div className='character-select-container container'>
+                {profileFullName}      
+                <input id='search' type='text' className={selectedProfile ? 'hide' : ''}
+                       placeholder='Search...' onChange={this.filterProfiles} />
+                <div className="grid-row">
+                    {this.state.profiles.map(profile => this.mapProfileToCard(this.state, profile))}
                 </div>
             </div>
         );

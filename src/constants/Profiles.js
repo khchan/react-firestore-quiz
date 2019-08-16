@@ -21,8 +21,17 @@ import TongWu from '../assets/tong-wu-sophia.jpg';
 import TonyLiu from '../assets/tony-liu-carl.jpg';
 import XianlingYu from '../assets/xianling-yu-carl.jpg';
 import YifanLi from '../assets/yifan-li-carl.jpg';
+import Incognito from '../assets/incognito.png';
+
+export const SELECTED_PROFILE_LS_KEY = "selectedProfile";
 
 export const Profiles = [
+    {
+        firstName: 'New',
+        lastName: 'Character',
+        association: 'carl & sophia',
+        img: Incognito
+    },
     {
         firstName: 'Angela',
         lastName: 'Ho',

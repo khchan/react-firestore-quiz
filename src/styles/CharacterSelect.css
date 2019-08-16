@@ -33,15 +33,14 @@
     }
 }
 
-.search {
+#search {
     background: transparent;
     border: none;
     outline: none;
-    font-size: 1.7em;
+    font-size: 1.1em;
     color: white;
     font-weight: bold;
     text-align: center;
     width: 300px;
-    margin-block-start: 0.6em;
     margin-block-end: 0.6em;
 }

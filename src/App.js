@@ -65,11 +65,9 @@ class App extends React.Component {
   render() {    
     return (
       <Router>
-        <div>
-          <div className="App">
-            <Route path="/" exact component={this.state.component} />
-            <Route path="/admin/" component={Admin} />
-          </div>
+        <div className="App">
+          <Route path="/" exact component={this.state.component} />
+          <Route path="/admin/" component={Admin} />
         </div>
       </Router>
     );
