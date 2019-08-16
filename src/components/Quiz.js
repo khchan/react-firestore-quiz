@@ -77,7 +77,6 @@ class Quiz extends React.Component {
                            endTime         : endTime,});
 
             if (self.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
-                console.log("beginning countdown");
                 self.beginCountdown();
             } else {
                 self.resetCountdown();
@@ -125,8 +124,8 @@ class Quiz extends React.Component {
                             --countdown: ${ANSWER_COUNTDOWN_DURATION + "s"};
                         }`}</style>
                         <div id="countdown-bar"></div>
-                        {this.isCountingDown() ? <p class="countdown-text">{this.state.localCountdownSeconds}</p> : null}
-                        {this.isOutOfTime() ? <p class="countdown-text">Yer outta time!</p> : null}
+                        {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
+                        {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
                         <p className="question-text">{questionText}</p>
                         {answers.map(a => (
