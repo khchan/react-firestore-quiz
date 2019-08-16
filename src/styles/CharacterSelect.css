@@ -1,28 +1,8 @@
 .character-select-container {
-    margin-top: 10px;
+    margin: 10x;
 }
 
-.cards {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    text-align: center;
-    justify-content: center;
-}
-
-.card {
-    flex: 0 0 100px;
-    margin: 10px;
-    box-shadow: 2px 2px 6px 0px  rgba(0,0,0,0.3);
-    cursor: pointer;
-}
-
-.card img {
-    max-width: 100%;
-}
-
-.card .text {
-    padding: 0 20px 10px;
+.text {
     font-size: 16px;
     white-space: nowrap;
 }

@@ -1,20 +1,21 @@
 import React from 'react';
 import '../styles/Buttons.css';
 import '../styles/CharacterSelect.css';
+import '../styles/Grid.css';
 import { Profiles } from '../constants/Profiles.js';
 
 class CharacterSelect extends React.Component {
 
     state = {
         selectedProfile: null,
-        profiles: []
+        profiles: Profiles
     }
 
     toggleCharacterSelect(profile) {
         if (this.state.selectedProfile && this.state.selectedProfile.img === profile.img) {
-            this.setState({selectedProfile: null});
+            this.setState({ selectedProfile: null, profiles: Profiles });
         } else {
-            this.setState({selectedProfile: profile});
+            this.setState({ selectedProfile: profile, profiles: [profile] });
         }
     }
 
@@ -27,21 +28,20 @@ class CharacterSelect extends React.Component {
         this.setState({ profiles: filtered });
     }
 
-    componentDidMount() {
-        this.setState({profiles: Profiles});
-    }
-
     mapProfileToCard(state, profile) {
         let isCharacterSelected = state.selectedProfile && (profile.img === state.selectedProfile.img);
         const profileName = `${profile.firstName}-${profile.lastName}`;
         const profileSelected = isCharacterSelected ? 'card-img-pulsate' : '';
-        const selectedProfileName = isCharacterSelected ? 'selected-profile-name' : '';
+        const nameOrReadyText = isCharacterSelected ? 
+            <h1 className='selected-profile-name'>READY</h1> : <span>{profile.firstName} {profile.lastName}</span>;
 
         return (
-            <div className='card' key={profileName} onClick={() => this.toggleCharacterSelect(profile)}>
-                <img alt='Avatar' className={profileSelected} src={profile.img}></img>
-                <div className='text'>
-                    <span className={selectedProfileName}>{profile.firstName}<br />{profile.lastName}</span>
+            <div className="grid-item" key={profileName} onClick={() => this.toggleCharacterSelect(profile)}>
+                <div className='grid-item-container'>
+                    <img alt='Avatar' className={profileSelected} src={profile.img}></img>
+                    <div className="text">
+                        {nameOrReadyText}
+                    </div>
                 </div>
             </div>
         );
@@ -54,10 +54,14 @@ class CharacterSelect extends React.Component {
 
         return (
             <div className='character-select-container'>
-                <input type='text' className={`search ${selectedProfile ? 'hide' : ''}`} 
-                       placeholder='Search' onChange={this.filterProfiles} />
+                <input type='text' className={`search ${selectedProfile ? 'hide' : ''}`}
+                    placeholder='Search' onChange={this.filterProfiles} />
                 {profileFullName}
-                <div className="cards">{this.state.profiles.map(profile => this.mapProfileToCard(this.state, profile))}</div>
+                <div className="container">
+                    <div className="grid-row">
+                        {this.state.profiles.map(profile => this.mapProfileToCard(this.state, profile))}
+                    </div>
+                </div>
             </div>
         );
     }
