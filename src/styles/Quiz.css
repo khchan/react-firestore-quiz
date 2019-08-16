@@ -1,0 +1,129 @@
+@font-face {
+  font-family: 'Question Serif';
+  font-style: normal;
+  src: url('../fonts/Chunkfive.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Title Sans';
+  font-style: normal;
+  src: url('../fonts/sacramento.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Answer Sans';
+  font-style: normal;
+  src: url('../fonts/Please write me a song.ttf') format('truetype');
+}
+
+#countdown-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: white;
+    height: calc(1px + 0.5vmin);
+    animation-duration: var(--countdown);
+    animation-name: shrink;
+    animation-timing-function: linear;
+}
+
+.countdown-text {
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 25%);
+    font-size: calc(8px + 2vmin);
+}
+
+@keyframes shrink {
+  0% {
+    width: 100%;
+  }
+
+  100% {
+    width: 0%;
+  }
+}
+
+.title-text {
+  font-family: 'Title Sans';
+  font-size: calc(32px + 2vmin);
+  margin: 0;
+}
+
+.question-text {
+  font-family: 'Question Serif';
+  font-size: calc(16px + 2vmin);
+}
+
+.question-count-intro {
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-name: bounce-down-from-above;
+  animation-duration: 0.6s;
+  animation-delay: 0.1s;
+}
+
+.question-intro {
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-name: fade-in;
+  animation-duration: 0.5s;
+  animation-delay: 1.1s;
+}
+
+.button.-quiz-answer {
+  color: #202129;
+  font-family: 'Answer Sans';
+  font-size: calc(16px + 2vmin);
+}
+
+.button.-quiz-answer.-intro {
+  transform: scale(0, 0);
+  animation-fill-mode: forwards;
+  animation-name: pop-in;
+  animation-duration: 0.5s;
+}
+
+@keyframes bounce-down-from-above {
+  0% {
+    opacity: .2;
+    transform: translateY(-200px);
+  }
+
+  50% {
+    opacity: .7;
+    transform: translateY(15px);
+  }
+
+  60% {
+    opacity: .7;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0, 0);
+  }
+
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+}

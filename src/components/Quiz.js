@@ -1,8 +1,16 @@
 import React from 'react';
+import '../styles/Quiz.css';
 import {db} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
 
 const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
+
+function wordify(num) {
+    const words = [ "Zero", "One", "Two", "Three", "Four", "Five", "Six"
+                  , "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"
+                  , "Thirteen", "Fourteen" ];
+    return num >= words.length ? num : words[num];
+}
 
 class Quiz extends React.Component {
 
@@ -69,7 +77,6 @@ class Quiz extends React.Component {
                            endTime         : endTime,});
 
             if (self.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
-                console.log("beginning countdown");
                 self.beginCountdown();
             } else {
                 self.resetCountdown();
@@ -104,19 +111,25 @@ class Quiz extends React.Component {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
-                        <p>Question: {this.state.currentQuestion}/{this.state.questions.length}</p>
-                        {questionText}
+                        <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="question-intro question-text">{questionText}</p>
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
+                // weird, probably a hack: injecting lkjCSS variable for countdown time
                 return (
                     <div>
-                        <p>Question: {this.state.currentQuestion}/{this.state.questions.length}</p>
-                        {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
-                        {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
-                        {questionText}
+                        <style>{`
+                        :root {
+                            --countdown: ${this.isCountingDown() ? ANSWER_COUNTDOWN_DURATION + "s" : "0s"};
+                        }`}</style>
+                        <div id="countdown-bar"></div>
+                        {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
+                        {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
+                        <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="question-text">{questionText}</p>
                         {answers.map(a => (
-                            <button className={`button -regular`}>{a.displayName}</button>
+                            <button className={`button -quiz-answer -intro`}>{a.displayName}</button>
                         ))}
                     </div>
                 );
@@ -124,7 +137,7 @@ class Quiz extends React.Component {
                 return (
                     <div>
                         <p>Results (TODO)</p>
-                        {questionText}
+                        <p className="question-text">{questionText}</p>
                     </div>
                 );
             default:
