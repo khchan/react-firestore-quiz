@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Admin.css';
+import '../styles/Buttons.css';
 import * as constants from '../constants/Stages.js';
 import {db} from '../firebase.js';
 

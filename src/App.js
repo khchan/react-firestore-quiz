@@ -21,7 +21,7 @@ class App extends React.Component {
     let self = this;
     
     db.collection("state").doc("stage").onSnapshot(snapshot => {
-        const currentStage = snapshot.data();
+        const currentStage = snapshot.data() || {id: constants.CHARACTER_SELECT};
         let component = null;
         if (currentStage.id === constants.CHARACTER_SELECT) {
           component = CharacterSelect;
@@ -41,10 +41,8 @@ class App extends React.Component {
       <Router>
         <div>
           <div className="App">
-            <header className="App-header">
-              <Route path="/" exact component={this.state.component} />
-              <Route path="/admin/" component={Admin} />
-            </header>
+            <Route path="/" exact component={this.state.component} />
+            <Route path="/admin/" component={Admin} />
           </div>
         </div>
       </Router>
