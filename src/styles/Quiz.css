@@ -1,4 +1,4 @@
-#timer-bar {
+#countdown-bar {
     position: absolute;
     top: 0;
     left: 0;
@@ -7,6 +7,15 @@
     animation-duration: var(--countdown);
     animation-name: shrink;
     animation-timing-function: linear;
+}
+
+.countdown-text {
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 25%);
+    font-size: calc(8px + 2vmin);
 }
 
 @keyframes shrink {

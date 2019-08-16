@@ -117,17 +117,17 @@ class Quiz extends React.Component {
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
-                // weird, probably a hack: injecting CSS variable for countdown time
+                // weird, probably a hack: injecting lkjCSS variable for countdown time
                 return (
                     <div>
                         <style>{`
                         :root {
                             --countdown: ${ANSWER_COUNTDOWN_DURATION + "s"};
                         }`}</style>
-                        <div id="timer-bar"></div>
+                        <div id="countdown-bar"></div>
+                        {this.isCountingDown() ? <p class="countdown-text">{this.state.localCountdownSeconds}</p> : null}
+                        {this.isOutOfTime() ? <p class="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
-                        {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
-                        {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
                         <p className="question-text">{questionText}</p>
                         {answers.map(a => (
                             <button className={`button -regular`}>{a.displayName}</button>
