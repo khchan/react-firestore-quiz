@@ -129,7 +129,7 @@ class Quiz extends React.Component {
                         <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
                         <p className="question-text">{questionText}</p>
                         {answers.map(a => (
-                            <button className={`button -regular`}>{a.displayName}</button>
+                            <button className={`button -quiz-answer`}>{a.displayName}</button>
                         ))}
                     </div>
                 );
