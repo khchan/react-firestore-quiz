@@ -2,7 +2,7 @@ import React from 'react';
 import '../styles/Buttons.css';
 import * as constants from '../constants/Stages.js';
 import * as usertypes from '../constants/UserTypes.js';
-import {auth, db, FieldValue} from '../firebase.js';
+import {db, FieldValue} from '../firebase.js';
 
 const questionList = {
     listStyle: 'none'
@@ -160,19 +160,6 @@ class Admin extends React.Component {
         });
     
         self.setState({unsubscribeCallbacks: [unsubscribeQuestion, unsubscribeState, unsubscribeStage]});
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                let sessionRef = db.collection('sessions').doc(user.uid);
-                sessionRef.get().then(doc => {
-                    if (doc.exists && doc.data().type !== usertypes.ADMIN) {
-                        sessionRef.update({
-                            type: usertypes.ADMIN,
-                        });
-                    }
-                });
-            }
-        });
     }
 
     componentWillUnmount() {
