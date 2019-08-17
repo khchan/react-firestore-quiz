@@ -94,6 +94,7 @@ class Quiz extends React.Component {
             });
 
             if (self.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
+                this.setState({ selectedAnswerIdx: -1 });
                 self.beginCountdown();
             } else {
                 self.resetCountdown();
@@ -124,7 +125,12 @@ class Quiz extends React.Component {
 
     selectAnswer(idx) {
         // you've already selected an answer
-        if (this.state.selectAnswerIdx !== -1) {
+        if (this.state.selectedAnswerIdx !== -1) {
+            return;
+        }
+
+        // you can no longer select an answer
+        if (this.isOutOfTime()) {
             return;
         }
 
