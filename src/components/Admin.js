@@ -17,8 +17,9 @@ class Admin extends React.Component {
         stage: constants.SPLASH,
         stageRef: null,
         currentQuestion: 1,
+        currentQuestionResults: [],
         questionStage: 0,
-        currentQuestionRef: null,
+        currentStateRef: null,
         countdown: 0,
         questions: [],
         startTime: 0, // firebase timestamp
@@ -66,6 +67,16 @@ class Admin extends React.Component {
                 } else { // clamp nextQuestionStage
                     nextQuestionStage = MAX_QUESTION_STAGE;
                 }
+            } else if (nextQuestionStage == constants.QuestionStage.READ_RESULTS) {
+                const currentQuestion = this.state.currentQuestion;
+                const record = db.collection("state").doc("q" + currentQuestion);
+                record.set({
+                    id: currentQuestion,
+                    response1: this.state.currentQuestionResults[0],
+                    response2: this.state.currentQuestionResults[1],
+                    response3: this.state.currentQuestionResults[2],
+                    response4: this.state.currentQuestionResults[3],
+                });
             }
 
             payload.questionStage = nextQuestionStage;
@@ -84,7 +95,7 @@ class Admin extends React.Component {
                 this.resetCountdown();
             }
 
-            this.state.currentQuestionRef.update(payload);
+            this.state.currentStateRef.update(payload);
         }
     }
 
@@ -103,7 +114,7 @@ class Admin extends React.Component {
                 }
             }
 
-            this.state.currentQuestionRef.update({
+            this.state.currentStateRef.update({
                 question: prevQuestion,
                 questionStage: prevQuestionStage,
             });
@@ -114,7 +125,7 @@ class Admin extends React.Component {
 
     resetGameState() {
         return () => {
-            this.state.currentQuestionRef.update({
+            this.state.currentStateRef.update({
                 question: 1, 
                 questionStage: constants.QuestionStage.READ_QUESTION
             });
@@ -137,8 +148,12 @@ class Admin extends React.Component {
             const currentState = snapshot.data();
             self.setState({
                 currentQuestion: currentState.question,
+                currentQuestionResults: [ currentState.response1
+                                        , currentState.response2
+                                        , currentState.response3
+                                        , currentState.response4 ],
                 questionStage: currentState.questionStage,
-                currentQuestionRef: snapshot.ref,
+                currentStateRef: snapshot.ref,
                 startTime: currentState.startTime,
                 endTime: currentState.startTime ?
                          currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :

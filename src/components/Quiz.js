@@ -176,7 +176,7 @@ class Quiz extends React.Component {
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
-                // weird, probably a hack: injecting lkjCSS variable for countdown time
+                // weird hack: injecting CSS variable for countdown time
                 return (
                     <div>
                         <style>{`
@@ -198,8 +198,8 @@ class Quiz extends React.Component {
             case constants.QuestionStage.READ_RESULTS:
                 return (
                     <div>
-                        <p>Results (TODO)</p>
-                        <p className="question-text">{questionText}</p>
+                        <p className="title-text">Results</p>
+                        <p className="results-question-text">{questionText}</p>
                     </div>
                 );
             default:

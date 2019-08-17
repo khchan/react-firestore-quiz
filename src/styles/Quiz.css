@@ -88,6 +88,11 @@
   animation-duration: 0.5s;
 }
 
+.results-question-text {
+  font-family: 'Question Serif';
+  font-size: calc(10px + 1.5vmin);
+}
+
 @keyframes bounce-down-from-above {
   0% {
     opacity: .2;
