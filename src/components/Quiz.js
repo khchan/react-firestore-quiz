@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/Quiz.css';
-import {db} from '../firebase.js';
+import {db, FieldValue} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
 import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
@@ -27,6 +27,10 @@ class Quiz extends React.Component {
         localCountdownIntervalID: -1,
 
         profile: null,
+        selectedAnswerIdx: -1,
+        results: [],
+
+        currentStateRef: null,
     }
 
     beginCountdown() {
@@ -79,14 +83,28 @@ class Quiz extends React.Component {
             const endTime = currentState.startTime ?
                             currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :
                             -1;
-            self.setState({currentQuestion : currentState.question,
-                           questionStage   : currentState.questionStage,
-                           endTime         : endTime,});
+            self.setState({currentQuestion   : currentState.question,
+                           questionStage     : currentState.questionStage,
+                           endTime           : endTime,
+                           results           : [ currentState.response1
+                                               , currentState.response2
+                                               , currentState.response3
+                                               , currentState.response4 ],
+                           currentStateRef   : snapshot.ref,
+            });
 
             if (self.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
                 self.beginCountdown();
             } else {
                 self.resetCountdown();
+            }
+
+            if (self.state.selectedAnswerIdx === -1) {
+                for (let responseIdx = 0; responseIdx < self.state.results.length; responseIdx++) {
+                    if (self.state.results[responseIdx].indexOf(self.state.profile.id) !== -1) {
+                        self.setState({ selectedAnswerIdx: responseIdx });
+                    }
+                }
             }
         });
     }
@@ -102,6 +120,41 @@ class Quiz extends React.Component {
         end.setUTCSeconds(this.state.endTime);
         return this.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER &&
                now > end;
+    }
+
+    selectAnswer(idx) {
+        // you've already selected an answer
+        if (this.state.selectAnswerIdx !== -1) {
+            return;
+        }
+
+        this.setState({ selectedAnswerIdx: idx });
+        // LOL - doing this because we can't have nested arrays in firestore
+        switch (idx) {
+            case 0:
+                this.state.currentStateRef.update({
+                    response1: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            case 1:
+                this.state.currentStateRef.update({
+                    response2: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            case 2:
+                this.state.currentStateRef.update({
+                    response3: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            case 3:
+                this.state.currentStateRef.update({
+                    response4: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            default:
+                // unhandled!
+                break;
+        }
     }
 
     render() {
@@ -136,7 +189,9 @@ class Quiz extends React.Component {
                         <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
                         <p className="question-text">{questionText}</p>
                         {answers.map((a, idx) => (
-                            <button key={idx} className={`button -quiz-answer -intro`}>{a.displayName}</button>
+                            <button key={idx} className={`button -quiz-answer -intro`} onClick={() => this.selectAnswer(idx)}>
+                                {a.displayName}
+                            </button>
                         ))}
                     </div>
                 );
