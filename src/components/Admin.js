@@ -1,7 +1,6 @@
 import React from 'react';
 import '../styles/Buttons.css';
 import * as constants from '../constants/Stages.js';
-import * as usertypes from '../constants/UserTypes.js';
 import {db, FieldValue} from '../firebase.js';
 
 const questionList = {

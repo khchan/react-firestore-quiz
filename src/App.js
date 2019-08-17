@@ -8,7 +8,6 @@ import Leaderboard from './components/Leaderboard.js';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import {db} from './firebase.js';
 import * as constants from './constants/Stages.js';
-import * as usertypes from './constants/UserTypes.js';
 
 class App extends React.Component {
   

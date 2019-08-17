@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/Quiz.css';
 import {db} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
+import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
 
@@ -24,6 +25,8 @@ class Quiz extends React.Component {
         endTime: 0, // epoch seconds
         localCountdownSeconds: -1,
         localCountdownIntervalID: -1,
+
+        profile: null,
     }
 
     beginCountdown() {
@@ -51,6 +54,10 @@ class Quiz extends React.Component {
 
     componentDidMount() {
         let self = this;
+
+        const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY) || null);
+        self.setState({ profile: profile });
+
         db.collection("people").onSnapshot(snapshot => {
             let people = {};
             snapshot.forEach(doc => {
@@ -128,8 +135,8 @@ class Quiz extends React.Component {
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
                         <p className="question-text">{questionText}</p>
-                        {answers.map(a => (
-                            <button className={`button -quiz-answer -intro`}>{a.displayName}</button>
+                        {answers.map((a, idx) => (
+                            <button key={idx} className={`button -quiz-answer -intro`}>{a.displayName}</button>
                         ))}
                     </div>
                 );
