@@ -16,7 +16,8 @@ function wordify(num) {
 class Quiz extends React.Component {
 
     state = {
-        currentQuestion: 1,
+        currentQuestionId: 1,
+        currentQuestion: null,
         questionStage: 0,
         questions: [],
         people: {},
@@ -56,6 +57,15 @@ class Quiz extends React.Component {
         this.setState({ localCountdownSeconds: -1 });
     }
 
+    findQuestion(questionId) {
+        for (let i = 0; i < this.state.questions.length; i++) {
+            if (this.state.questions[i].id === questionId) {
+                return this.state.questions[i];
+            }
+        }
+        return null;
+    }
+
     componentDidMount() {
         let self = this;
 
@@ -83,7 +93,8 @@ class Quiz extends React.Component {
             const endTime = currentState.startTime ?
                             currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :
                             -1;
-            self.setState({currentQuestion   : currentState.question,
+            self.setState({currentQuestionId : currentState.question,
+                           currentQuestion   : self.findQuestion(currentState.question),
                            questionStage     : currentState.questionStage,
                            endTime           : endTime,
                            results           : [ currentState.response1
@@ -164,20 +175,15 @@ class Quiz extends React.Component {
     }
 
     render() {
-        const question = this.state.questions
-            .filter(q => this.state.currentQuestion === q.id);
-
-        const questionText = question.map(q => q.name);
-        const answerKeys = question.map(q => q.answers).flat();
-        const answers = answerKeys
-            .map(p => this.state.people.hasOwnProperty(p) ?
-                      this.state.people[p] : {displayName: "unknown"});
+        const question = this.state.currentQuestion;
+        const questionText = question ? question.name : "";
+        const answers = question ? question.answers : [];
 
         switch (this.state.questionStage) {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
-                        <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-intro question-text">{questionText}</p>
                     </div>
                 );
@@ -192,11 +198,11 @@ class Quiz extends React.Component {
                         <div id="countdown-bar"></div>
                         {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
-                        <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
                         {answers.map((a, idx) => (
                             <button key={idx} className={`button -quiz-answer -intro`} onClick={() => this.selectAnswer(idx)}>
-                                {a.displayName}
+                                {a}
                             </button>
                         ))}
                     </div>

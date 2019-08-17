@@ -67,7 +67,7 @@ class Admin extends React.Component {
                 } else { // clamp nextQuestionStage
                     nextQuestionStage = MAX_QUESTION_STAGE;
                 }
-            } else if (nextQuestionStage == constants.QuestionStage.READ_RESULTS) {
+            } else if (nextQuestionStage === constants.QuestionStage.READ_RESULTS) {
                 const currentQuestion = this.state.currentQuestion;
                 const record = db.collection("state").doc("q" + currentQuestion);
                 record.set({
