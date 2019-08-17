@@ -15,8 +15,12 @@ class CharacterSelect extends React.Component {
         };
     }
 
+    isCharacterSelected(profile) {
+        return this.state.selectedProfile && (this.state.selectedProfile.id === profile.id);
+    }
+
     toggleCharacterSelect(profile) {
-        if (this.state.selectedProfile && this.state.selectedProfile.img === profile.img) {
+        if (this.isCharacterSelected(profile)) {
             this.setState({ selectedProfile: null, profiles: Profiles });
             localStorage.removeItem(SELECTED_PROFILE_LS_KEY);
         } else {
@@ -27,7 +31,7 @@ class CharacterSelect extends React.Component {
 
     filterProfiles = (event) => {
         let filtered = Profiles.filter(profile => {
-            let profileName = profile.firstName.toLowerCase() + profile.lastName.toLowerCase() + profile.association.toLowerCase()
+            let profileName = profile.firstName.toLowerCase() + profile.lastName.toLowerCase();
             return profileName.indexOf(event.target.value.toLowerCase()) !== -1;
         });
 
@@ -35,11 +39,10 @@ class CharacterSelect extends React.Component {
     }
 
     mapProfileToCard(state, profile) {
-        let isCharacterSelected = state.selectedProfile && (profile.img === state.selectedProfile.img);
         const profileName = `${profile.firstName}-${profile.lastName}`;
-        const profileSelected = isCharacterSelected ? 'card-img-pulsate' : '';
-        const nameOrReadyText = isCharacterSelected ? 
-            <h1 className='selected-profile-name'>READY</h1> : <span>{profile.firstName} {profile.lastName}</span>;
+        const profileSelected = this.isCharacterSelected(profile) ? 'card-img-pulsate' : '';
+        const nameOrReadyText = this.isCharacterSelected(profile) ? 
+            <h2 className='selected-profile-name'>READY</h2> : <span>{profile.firstName} {profile.lastName}</span>;
 
         return (
             <div className="grid-item" key={profileName} onClick={() => this.toggleCharacterSelect(profile)}>
@@ -55,11 +58,11 @@ class CharacterSelect extends React.Component {
 
     render() {
         const selectedProfile = this.state.selectedProfile;
-        const profileFullName = selectedProfile ? <h2>{selectedProfile.firstName} {selectedProfile.lastName}</h2> : <h2>Character Select</h2>;
+        const profileFullName = selectedProfile ? `${selectedProfile.firstName} ${selectedProfile.lastName}` : 'Character Select';
 
         return (
             <div className='character-select-container container'>
-                {profileFullName}      
+                <h1>{profileFullName}</h1>
                 <input id='search' type='text' className={selectedProfile ? 'hide' : ''}
                        placeholder='Search...' onChange={this.filterProfiles} />
                 <div className="grid-row">

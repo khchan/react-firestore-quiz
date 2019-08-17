@@ -22,152 +22,220 @@ import TonyLiu from '../assets/tony-liu-carl.jpg';
 import XianlingYu from '../assets/xianling-yu-carl.jpg';
 import YifanLi from '../assets/yifan-li-carl.jpg';
 import Incognito from '../assets/incognito.png';
+import Avatar from '../assets/avatar.png';
+import Mccree from '../assets/mccree.png';
+import CarlRen from '../assets/carl.jpg';
+import SophiaLi from '../assets/sophia.jpg';
 
 export const SELECTED_PROFILE_LS_KEY = "selectedProfile";
 
 export const Profiles = [
     {
-        firstName: 'New',
-        lastName: 'Character',
-        association: 'carl & sophia',
-        img: Incognito
+        firstName: 'Anonymous',
+        lastName: '',
+        img: Incognito,
+        id: 'Incognito'
     },
     {
         firstName: 'Angela',
         lastName: 'Ho',
-        association: 'sophia',
-        img: AngelaHo
+        img: AngelaHo,
+        id: 'AngelaHo'
     },
     {
         firstName: 'Anna',
         lastName: 'Chan',
-        association: 'sophia',
-        img: AnnaChan
+        img: AnnaChan,
+        id: 'AnnaChan'
     },
     {
         firstName: 'Dave',
         lastName: 'Yu',
-        association: 'carl',
-        img: DaveYu
+        img: DaveYu,
+        id: 'DaveYu'
     },
     {
         firstName: 'Edwin',
         lastName: 'Wu',
-        association: 'carl',
-        img: EdwinWu
+        img: EdwinWu,
+        id: 'EdwinWu'
     },
     {
         firstName: 'Florence',
         lastName: 'Chan',
-        association: 'sophia',
-        img: FlorenceChan
+        img: FlorenceChan,
+        id: 'FlorenceChan'
     },
     {
         firstName: 'Ghassan',
         lastName: 'Elkarim',
-        association: 'carl',
-        img: GhassanElkarim
+        img: GhassanElkarim,
+        id: 'GhassanElkarim'
     },
     {
         firstName: 'Harry',
         lastName: 'Yu',
-        association: 'carl',
-        img: HarryYu
+        img: HarryYu,
+        id: 'HarryYu'
     },
     {
         firstName: 'Hongtao',
         lastName: 'Li',
-        association: 'carl',
-        img: HongtaoLi
+        img: HongtaoLi,
+        id: 'HongtaoLi'
     },
     {
         firstName: 'Hussam',
         lastName: 'Bukhari',
-        association: 'carl',
-        img: HussamBukhari
+        img: HussamBukhari,
+        id: 'HussamBukhari'
     },
     {
         firstName: 'Jie',
         lastName: 'Ren',
-        association: 'carl',
-        img: JieRen
+        img: JieRen,
+        id: 'JieRen'
     },
     {
         firstName: 'Jing',
         lastName: 'Ji',
-        association: 'sophia',
-        img: JingJi
+        img: JingJi,
+        id: 'JingJi'
     },
     {
         firstName: 'Karen',
         lastName: 'Qi',
-        association: 'sophia',
-        img: KarenQi
+        img: KarenQi,
+        id: 'KarenQi'
     },
     {
         firstName: 'Kevin',
         lastName: 'Chan',
-        association: 'carl',
-        img: KevinChan
+        img: KevinChan,
+        id: 'KevinChan'
     },
     {
         firstName: 'Marisa',
         lastName: 'Ramandt',
-        association: 'sophia',
-        img: MarisaRamandt
+        img: MarisaRamandt,
+        id: 'MarisaRamandt'
     },
     {
         firstName: 'Meimei',
         lastName: 'Zhang',
-        association: 'sophia',
-        img: MeimeiZhang
+        img: MeimeiZhang,
+        id: 'MeimeiZhang'
     },
     {
         firstName: 'Moe',
         lastName: 'El-Youssef',
-        association: 'carl',
-        img: MoeElYoussef
+        img: MoeElYoussef,
+        id: 'MoeElYoussef'
     },
     {
         firstName: 'Sissi',
         lastName: 'Wang',
-        association: 'sophia',
-        img: SissiWang
+        img: SissiWang,
+        id: 'SissiWang'
     },
     {
         firstName: 'Steven',
         lastName: 'You',
-        association: 'sophia',
-        img: StevenYou
+        img: StevenYou,
+        id: 'StevenYou'
     },
     {
         firstName: 'Sunny',
         lastName: 'Yin',
-        association: 'carl',
-        img: SunnyYin
+        img: SunnyYin,
+        id: 'SunnyYin'
     },
     {
         firstName: 'Tong',
         lastName: 'Wu',
-        association: 'sophia',
-        img: TongWu
+        img: TongWu,
+        id: 'TongWu'
     },
     {
         firstName: 'Tony',
         lastName: 'Liu',
-        association: 'carl',
-        img: TonyLiu
+        img: TonyLiu,
+        id: 'TonyLiu'
     },
     {
         firstName: 'Xianling',
         lastName: 'Yu',
-        association: 'carl',
-        img: XianlingYu
+        img: XianlingYu,
+        id: 'XianlingYu'
     },
     {
         firstName: 'Yifan',
         lastName: 'Li',
-        association: 'carl',
-        img: YifanLi
+        img: YifanLi,
+        id: 'YifanLi'
+    },
+    {
+        firstName: 'Shilin',
+        lastName: 'He',
+        img: Avatar,
+        id: 'ShilinHe'
+    },
+    {
+        firstName: 'Elizabeth',
+        lastName: '',
+        img: Avatar,
+        id: 'Elizabeth'
+    },
+    {
+        firstName: 'Kayla',
+        lastName: '',
+        img: Avatar,
+        id: 'Kayla'
+    },
+    {
+        firstName: 'Joey',
+        lastName: '',
+        img: Avatar,
+        id: 'Joey'
+    },
+    {
+        firstName: 'Ioan',
+        lastName: 'Piscureanu',
+        img: Avatar,
+        id: 'IoanPiscureanu'
+    },
+    {
+        firstName: 'Eileen',
+        lastName: 'Zhao',
+        img: Avatar,
+        id: 'EileenZhao'
+    },
+    {
+        firstName: 'Adrian',
+        lastName: 'Harris',
+        img: Avatar,
+        id: 'AdrianHarris'
+    },
+    {
+        firstName: 'McCree',
+        lastName: '',
+        img: Mccree,
+        id: 'Mccree'
+    },
+    {
+        firstName: 'Carl',
+        lastName: 'Ren',
+        img: CarlRen,
+        id: 'CarlRen'
+    },
+    {
+        firstName: 'Sophia',
+        lastName: 'Li',
+        img: SophiaLi,
+        id: 'SophiaLi'
     }
-];
+].sort(function(a, b){
+    if(a.firstName < b.firstName) { return -1; }
+    if(a.firstName > b.firstName) { return 1; }
+    return 0;
+});
