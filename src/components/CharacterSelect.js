@@ -30,9 +30,10 @@ class CharacterSelect extends React.Component {
     }
 
     filterProfiles = (event) => {
+        let searchValue = event.target.value.toLowerCase().replace(/\s/g, "");        ;
         let filtered = Profiles.filter(profile => {
-            let profileName = profile.firstName.toLowerCase() + profile.lastName.toLowerCase();
-            return profileName.indexOf(event.target.value.toLowerCase()) !== -1;
+            const fullName = profile.firstName.toLowerCase() + profile.lastName.toLowerCase();
+            return fullName.indexOf(searchValue.trim().toLowerCase()) !== -1;
         });
 
         this.setState({ profiles: filtered });
@@ -40,7 +41,7 @@ class CharacterSelect extends React.Component {
 
     mapProfileToCard(state, profile) {
         const profileName = `${profile.firstName}-${profile.lastName}`;
-        const profileSelected = this.isCharacterSelected(profile) ? 'card-img-pulsate' : '';
+        const profileSelected = this.isCharacterSelected(profile) ? 'profile-img card-img-pulsate' : 'profile-img';
         const nameOrReadyText = this.isCharacterSelected(profile) ? 
             <h2 className='selected-profile-name'>READY</h2> : <span>{profile.firstName} {profile.lastName}</span>;
 
