@@ -3,7 +3,7 @@ import '../styles/Quiz.css';
 import '../styles/Grid.css';
 import {db, FieldValue} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
-import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
+import {MakeUnique, AnonymousProfile, Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
 
@@ -70,7 +70,7 @@ class Quiz extends React.Component {
     componentDidMount() {
         let self = this;
 
-        const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY)) || Profiles[0];
+        const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY)) || MakeUnique(AnonymousProfile);
         self.setState({ profile: profile });
 
         db.collection("people").onSnapshot(snapshot => {
@@ -233,7 +233,7 @@ class Quiz extends React.Component {
                         <div className="grid-row">
                             {answers.map((a, idx) => (
                                 <div className="grid-item" key={idx}>
-                                  <button className={`button -quiz-answer -intro`} onClick={() => this.selectAnswer(idx)}>
+                                  <button className={`button -quiz-answer`}>
                                       {a}
                                   </button>
                                   {this.state.results[idx].map(profileKey => this.renderPlayerCard(profileKey))}
