@@ -220,7 +220,10 @@ class Quiz extends React.Component {
                     {showResults ? this.renderProfilesForResult(i) : null}
                 </div>
             );
-            if (answers.length === 2 && i === 0) {
+            // show an interstitial when there are only 2 choices,
+            // but don't show it in the results section, because it looks weird when
+            // veritcally centered
+            if (!showResults && answers.length === 2 && i === 0) {
                 rendered.push(
                     <div className="grid-item or-interstitial" key="or">
                         <p>or</p>
