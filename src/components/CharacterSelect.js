@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/Buttons.css';
 import '../styles/CharacterSelect.css';
 import '../styles/Grid.css';
+import CharacterCard from './CharacterCard.js';
 import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 class CharacterSelect extends React.Component {
@@ -48,10 +49,7 @@ class CharacterSelect extends React.Component {
         return (
             <div className="grid-item" key={profileName} onClick={() => this.toggleCharacterSelect(profile)}>
                 <div className='grid-item-container'>
-                    <img alt='Avatar' className={profileSelected} src={profile.img}></img>
-                    <div className="text">
-                        {nameOrReadyText}
-                    </div>
+                    <CharacterCard cardClass={profileSelected} profileImg={profile.img} cardText={nameOrReadyText}></CharacterCard>
                 </div>
             </div>
         );
