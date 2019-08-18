@@ -192,6 +192,39 @@ class Quiz extends React.Component {
         );
     }
 
+    renderAnswer(a, idx, hidden) {
+        return (
+          <button className={hidden ? `button -quiz-answer` : `button -quiz-answer -intro`}
+                  key={idx} onClick={() => this.selectAnswer(idx)}>{a}</button>
+        );
+    }
+
+    renderAnswers(answers, hidden) {
+        if (!answers || answers.length === 0) {
+            return null;
+        }
+        let rendered = [];
+        for (let i = 0; i < answers.length; i++) {
+            rendered.push(
+                <div className="grid-item" key={i}>
+                    {this.renderAnswer(answers[i], i, hidden)}
+                </div>
+            );
+            if (answers.length === 2 && i === 0) {
+                rendered.push(
+                    <div className="grid-item or-interstitial" key="or">
+                        <p>or</p>
+                    </div>
+                );
+            }
+        }
+        return (
+            <div className={hidden ? "grid-row question-hidden-answers" : "grid-row"}>
+                {rendered}
+            </div>
+        );
+    }
+
     render() {
         const question = this.state.currentQuestion;
         const questionText = question ? question.name : "";
@@ -203,6 +236,7 @@ class Quiz extends React.Component {
                     <div>
                         <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-intro question-text">{questionText}</p>
+                        {this.renderAnswers(answers, /* hidden */ true)}
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
@@ -218,11 +252,7 @@ class Quiz extends React.Component {
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
-                        {answers.map((a, idx) => (
-                            <button key={idx} className={`button -quiz-answer -intro`} onClick={() => this.selectAnswer(idx)}>
-                                {a}
-                            </button>
-                        ))}
+                        {this.renderAnswers(answers, /* hidden */ false)}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:

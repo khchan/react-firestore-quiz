@@ -73,6 +73,19 @@
   animation-delay: 1.1s;
 }
 
+.question-hidden-answers {
+  /* hide answer section so we can pop them in gracefully without popping the layout */
+  visibility: hidden;
+}
+
+.or-interstitial {
+  flex-basis: 10%; /* make the interstitial super skinny  */
+  font-family: 'Question Serif';
+  font-size: calc(10px + 1.25vmin);
+  margin: auto 0;
+  cursor: default;
+}
+
 .button.-quiz-answer {
   color: #202129;
   font-family: 'Answer Sans';
