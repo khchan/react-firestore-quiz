@@ -192,14 +192,23 @@ class Quiz extends React.Component {
         );
     }
 
-    renderAnswer(a, idx, hidden) {
+    renderProfilesForResult(idx) {
+      return (<div class="profile-grid-row">
+        {this.state.results[idx].map(
+          profileKey => <div class="profile-grid-item">{this.renderPlayerCard(profileKey)}</div>
+        )}
+        </div>
+      )
+    }
+
+    renderAnswer(a, idx, animate) {
         return (
-          <button className={hidden ? `button -quiz-answer` : `button -quiz-answer -intro`}
+          <button className={animate ? `button -quiz-answer -intro` : `button -quiz-answer`}
                   key={idx} onClick={() => this.selectAnswer(idx)}>{a}</button>
         );
     }
 
-    renderAnswers(answers, hidden) {
+    renderAnswers(answers, hidden, showResults) {
         if (!answers || answers.length === 0) {
             return null;
         }
@@ -207,7 +216,8 @@ class Quiz extends React.Component {
         for (let i = 0; i < answers.length; i++) {
             rendered.push(
                 <div className="grid-item" key={i}>
-                    {this.renderAnswer(answers[i], i, hidden)}
+                    {this.renderAnswer(answers[i], i, /* animate in */ !(hidden || showResults))}
+                    {showResults ? this.renderProfilesForResult(i) : null}
                 </div>
             );
             if (answers.length === 2 && i === 0) {
@@ -236,7 +246,7 @@ class Quiz extends React.Component {
                     <div>
                         <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-intro question-text">{questionText}</p>
-                        {this.renderAnswers(answers, /* hidden */ true)}
+                        {this.renderAnswers(answers, /* hidden */ true, /* show results */ false)}
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
@@ -252,7 +262,7 @@ class Quiz extends React.Component {
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
-                        {this.renderAnswers(answers, /* hidden */ false)}
+                        {this.renderAnswers(answers, /* hidden */ false, /* show results */ false)}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:
@@ -260,16 +270,7 @@ class Quiz extends React.Component {
                     <div>
                         <p className="title-text">Results</p>
                         <p className="results-question-text">{questionText}</p>
-                        <div className="grid-row">
-                            {answers.map((a, idx) => (
-                                <div className="grid-item" key={idx}>
-                                  <button className={`button -quiz-answer`}>
-                                      {a}
-                                  </button>
-                                  {this.state.results[idx].map(profileKey => this.renderPlayerCard(profileKey))}
-                                </div>
-                            ))}
-                        </div>
+                        {this.renderAnswers(answers, /* hidden */ false, /* show results */ true)}
                     </div>
                 );
             default:
