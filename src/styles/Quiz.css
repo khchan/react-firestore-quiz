@@ -92,6 +92,7 @@
   font-size: calc(16px + 2vmin);
   border-radius: 0px;
   border: calc(1px + 0.1vmin) solid #000;
+  background-color: #fff;
 }
 
 .button.-quiz-answer.-intro {
