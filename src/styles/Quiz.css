@@ -93,6 +93,11 @@
   font-size: calc(10px + 1.5vmin);
 }
 
+.results-profile-thumbnail {
+  max-width: 50%;
+  max-height: 50%;
+}
+
 @keyframes bounce-down-from-above {
   0% {
     opacity: .2;

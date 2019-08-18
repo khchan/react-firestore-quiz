@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/Quiz.css';
+import '../styles/Grid.css';
 import {db, FieldValue} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
 import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
@@ -69,7 +70,7 @@ class Quiz extends React.Component {
     componentDidMount() {
         let self = this;
 
-        const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY) || null);
+        const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY)) || Profiles[0];
         self.setState({ profile: profile });
 
         db.collection("people").onSnapshot(snapshot => {
@@ -78,8 +79,7 @@ class Quiz extends React.Component {
                 people[doc.id] = doc.data();
             });
             self.setState({people : people});
-        });
-
+        }); 
         db.collection("questions").onSnapshot(snapshot => {
             let questions = [];
             snapshot.forEach(doc => {
@@ -174,6 +174,24 @@ class Quiz extends React.Component {
         }
     }
 
+    renderPlayerCard(profileKey) {
+        let profile = null;
+        for (let i = 0; i < Profiles.length; i++) {
+            if (Profiles[i].id === profileKey) {
+                profile = Profiles[i];
+            }
+        }
+        if (profile === null) {
+            return null;
+        }
+        const profileName = `${profile.firstName}-${profile.lastName}`;
+        return (
+            <div key={profileName} >
+                <img className="results-profile-thumbnail" alt='Avatar' src={profile.img}></img>
+            </div>
+        );
+    }
+
     render() {
         const question = this.state.currentQuestion;
         const questionText = question ? question.name : "";
@@ -212,6 +230,16 @@ class Quiz extends React.Component {
                     <div>
                         <p className="title-text">Results</p>
                         <p className="results-question-text">{questionText}</p>
+                        <div className="grid-row">
+                            {answers.map((a, idx) => (
+                                <div className="grid-item" key={idx}>
+                                  <button className={`button -quiz-answer -intro`} onClick={() => this.selectAnswer(idx)}>
+                                      {a}
+                                  </button>
+                                  {this.state.results[idx].map(profileKey => this.renderPlayerCard(profileKey))}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 );
             default:

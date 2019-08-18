@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/Buttons.css';
 import * as constants from '../constants/Stages.js';
 import {db, FieldValue} from '../firebase.js';
+import {Profiles} from '../constants/Profiles.js';
 
 const questionList = {
     listStyle: 'none'
@@ -67,7 +68,14 @@ class Admin extends React.Component {
                 } else { // clamp nextQuestionStage
                     nextQuestionStage = MAX_QUESTION_STAGE;
                 }
+            } else if (nextQuestionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
+                // reset question results
+                payload.response1 = [];
+                payload.response2 = [];
+                payload.response3 = [];
+                payload.response4 = [];
             } else if (nextQuestionStage === constants.QuestionStage.READ_RESULTS) {
+                // record question result history
                 const currentQuestion = this.state.currentQuestion;
                 const record = db.collection("state").doc("q" + currentQuestion);
                 record.set({
@@ -130,6 +138,48 @@ class Admin extends React.Component {
                 questionStage: constants.QuestionStage.READ_QUESTION
             });
             this.state.stageRef.update({id: constants.SPLASH});
+        }
+    }
+
+    debugSetAllPlayerResponseTo(responseIdx) {
+        return () => {
+          // LOL - doing this because we can't have nested arrays in firestore
+          switch (responseIdx) {
+              case 0:
+                  this.state.currentStateRef.update({
+                      response1: Profiles.map(p => p.id)
+                  });
+                  break;
+              case 1:
+                  this.state.currentStateRef.update({
+                      response2: Profiles.map(p => p.id)
+                  });
+                  break;
+              case 2:
+                  this.state.currentStateRef.update({
+                      response3: Profiles.map(p => p.id)
+                  });
+                  break;
+              case 3:
+                  this.state.currentStateRef.update({
+                      response4: Profiles.map(p => p.id)
+                  });
+                  break;
+              default:
+                  // unhandled!
+                  break;
+          }
+        }
+    }
+
+    debugClearAllPlayerResponses() {
+        return () => {
+            this.state.currentStateRef.update({
+                response1: [],
+                response2: [],
+                response3: [],
+                response4: [],
+            });
         }
     }
 
@@ -219,6 +269,12 @@ class Admin extends React.Component {
                 <button className={`button -regular`} onClick={this.backtrackQuestionStage()}>Previous</button>
                 <button className={`button -regular`} onClick={this.advanceQuestionStage()}>Next</button>
                 <button className={`button -regular`} onClick={this.resetGameState()}>Reset</button>
+                <h2>Danger Zone</h2>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(0)}>Everyone Selects Response 1</button>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(1)}>Everyone Selects Response 2</button>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(2)}>Everyone Selects Response 3</button>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(3)}>Everyone Selects Response 3</button>
+                <button className={`button -regular`} onClick={this.debugClearAllPlayerResponses()}>Clear All Responses</button>
             </div>
         );
     }
