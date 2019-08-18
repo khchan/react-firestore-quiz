@@ -1,8 +1,8 @@
 import React from 'react';
 import '../styles/Buttons.css';
 import * as constants from '../constants/Stages.js';
-import * as usertypes from '../constants/UserTypes.js';
-import {auth, db, FieldValue} from '../firebase.js';
+import {db, FieldValue} from '../firebase.js';
+import {Profiles} from '../constants/Profiles.js';
 
 const questionList = {
     listStyle: 'none'
@@ -18,8 +18,9 @@ class Admin extends React.Component {
         stage: constants.SPLASH,
         stageRef: null,
         currentQuestion: 1,
+        currentQuestionResults: [],
         questionStage: 0,
-        currentQuestionRef: null,
+        currentStateRef: null,
         countdown: 0,
         questions: [],
         startTime: 0, // firebase timestamp
@@ -67,6 +68,23 @@ class Admin extends React.Component {
                 } else { // clamp nextQuestionStage
                     nextQuestionStage = MAX_QUESTION_STAGE;
                 }
+            } else if (nextQuestionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
+                // reset question results
+                payload.response1 = [];
+                payload.response2 = [];
+                payload.response3 = [];
+                payload.response4 = [];
+            } else if (nextQuestionStage === constants.QuestionStage.READ_RESULTS) {
+                // record question result history
+                const currentQuestion = this.state.currentQuestion;
+                const record = db.collection("state").doc("q" + currentQuestion);
+                record.set({
+                    id: currentQuestion,
+                    response1: this.state.currentQuestionResults[0],
+                    response2: this.state.currentQuestionResults[1],
+                    response3: this.state.currentQuestionResults[2],
+                    response4: this.state.currentQuestionResults[3],
+                });
             }
 
             payload.questionStage = nextQuestionStage;
@@ -85,7 +103,7 @@ class Admin extends React.Component {
                 this.resetCountdown();
             }
 
-            this.state.currentQuestionRef.update(payload);
+            this.state.currentStateRef.update(payload);
         }
     }
 
@@ -104,7 +122,7 @@ class Admin extends React.Component {
                 }
             }
 
-            this.state.currentQuestionRef.update({
+            this.state.currentStateRef.update({
                 question: prevQuestion,
                 questionStage: prevQuestionStage,
             });
@@ -115,11 +133,53 @@ class Admin extends React.Component {
 
     resetGameState() {
         return () => {
-            this.state.currentQuestionRef.update({
+            this.state.currentStateRef.update({
                 question: 1, 
                 questionStage: constants.QuestionStage.READ_QUESTION
             });
             this.state.stageRef.update({id: constants.SPLASH});
+        }
+    }
+
+    debugSetAllPlayerResponseTo(responseIdx) {
+        return () => {
+          // LOL - doing this because we can't have nested arrays in firestore
+          switch (responseIdx) {
+              case 0:
+                  this.state.currentStateRef.update({
+                      response1: Profiles.map(p => p.id)
+                  });
+                  break;
+              case 1:
+                  this.state.currentStateRef.update({
+                      response2: Profiles.map(p => p.id)
+                  });
+                  break;
+              case 2:
+                  this.state.currentStateRef.update({
+                      response3: Profiles.map(p => p.id)
+                  });
+                  break;
+              case 3:
+                  this.state.currentStateRef.update({
+                      response4: Profiles.map(p => p.id)
+                  });
+                  break;
+              default:
+                  // unhandled!
+                  break;
+          }
+        }
+    }
+
+    debugClearAllPlayerResponses() {
+        return () => {
+            this.state.currentStateRef.update({
+                response1: [],
+                response2: [],
+                response3: [],
+                response4: [],
+            });
         }
     }
 
@@ -138,8 +198,12 @@ class Admin extends React.Component {
             const currentState = snapshot.data();
             self.setState({
                 currentQuestion: currentState.question,
+                currentQuestionResults: [ currentState.response1
+                                        , currentState.response2
+                                        , currentState.response3
+                                        , currentState.response4 ],
                 questionStage: currentState.questionStage,
-                currentQuestionRef: snapshot.ref,
+                currentStateRef: snapshot.ref,
                 startTime: currentState.startTime,
                 endTime: currentState.startTime ?
                          currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :
@@ -160,19 +224,6 @@ class Admin extends React.Component {
         });
     
         self.setState({unsubscribeCallbacks: [unsubscribeQuestion, unsubscribeState, unsubscribeStage]});
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                let sessionRef = db.collection('sessions').doc(user.uid);
-                sessionRef.get().then(doc => {
-                    if (doc.exists && doc.data().type !== usertypes.ADMIN) {
-                        sessionRef.update({
-                            type: usertypes.ADMIN,
-                        });
-                    }
-                });
-            }
-        });
     }
 
     componentWillUnmount() {
@@ -218,6 +269,12 @@ class Admin extends React.Component {
                 <button className={`button -regular`} onClick={this.backtrackQuestionStage()}>Previous</button>
                 <button className={`button -regular`} onClick={this.advanceQuestionStage()}>Next</button>
                 <button className={`button -regular`} onClick={this.resetGameState()}>Reset</button>
+                <h2>Danger Zone</h2>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(0)}>Everyone Selects Response 1</button>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(1)}>Everyone Selects Response 2</button>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(2)}>Everyone Selects Response 3</button>
+                <button className={`button -regular`} onClick={this.debugSetAllPlayerResponseTo(3)}>Everyone Selects Response 3</button>
+                <button className={`button -regular`} onClick={this.debugClearAllPlayerResponses()}>Clear All Responses</button>
             </div>
         );
     }

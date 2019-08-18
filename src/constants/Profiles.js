@@ -29,13 +29,27 @@ import SophiaLi from '../assets/sophia.jpg';
 
 export const SELECTED_PROFILE_LS_KEY = "selectedProfile";
 
+export function MakeUnique(profile) {
+    if (profile === AnonymousProfile) {
+        let copy = {};
+        copy.firstName = profile.firstName;
+        copy.lastName = profile.lastName;
+        copy.img = profile.img;
+        copy.id = profile.id + shittyUUIDV4();
+        return copy;
+    }
+    return profile;
+}
+
+export const AnonymousProfile = {
+    firstName: 'Anonymous',
+    lastName: '',
+    img: Incognito,
+    id: 'Incognito'
+};
+
 export const Profiles = [
-    {
-        firstName: 'Anonymous',
-        lastName: '',
-        img: Incognito,
-        id: 'Incognito'
-    },
+    AnonymousProfile,
     {
         firstName: 'Angela',
         lastName: 'Ho',
@@ -239,3 +253,14 @@ export const Profiles = [
     if(a.firstName > b.firstName) { return 1; }
     return 0;
 });
+
+function shittyUUIDV4() {
+    // credit: https://stackoverflow.com/a/2117523
+    // this is shitty because Math.random() is not a cryptographically secure source
+    // of entropy, so this is not a good UUID, but it's good enough for our purposes
+    // there are warnings here: but these are all intentional so leaving them as-is
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}

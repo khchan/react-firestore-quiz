@@ -1,7 +1,9 @@
 import React from 'react';
 import '../styles/Quiz.css';
-import {db} from '../firebase.js';
+import '../styles/Grid.css';
+import {db, FieldValue} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
+import {MakeUnique, AnonymousProfile, Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
 
@@ -15,7 +17,8 @@ function wordify(num) {
 class Quiz extends React.Component {
 
     state = {
-        currentQuestion: 1,
+        currentQuestionId: 1,
+        currentQuestion: null,
         questionStage: 0,
         questions: [],
         people: {},
@@ -24,6 +27,12 @@ class Quiz extends React.Component {
         endTime: 0, // epoch seconds
         localCountdownSeconds: -1,
         localCountdownIntervalID: -1,
+
+        profile: null,
+        selectedAnswerIdx: -1,
+        results: [],
+
+        currentStateRef: null,
     }
 
     beginCountdown() {
@@ -49,16 +58,28 @@ class Quiz extends React.Component {
         this.setState({ localCountdownSeconds: -1 });
     }
 
+    findQuestion(questionId) {
+        for (let i = 0; i < this.state.questions.length; i++) {
+            if (this.state.questions[i].id === questionId) {
+                return this.state.questions[i];
+            }
+        }
+        return null;
+    }
+
     componentDidMount() {
         let self = this;
+
+        const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY)) || MakeUnique(AnonymousProfile);
+        self.setState({ profile: profile });
+
         db.collection("people").onSnapshot(snapshot => {
             let people = {};
             snapshot.forEach(doc => {
                 people[doc.id] = doc.data();
             });
             self.setState({people : people});
-        });
-
+        }); 
         db.collection("questions").onSnapshot(snapshot => {
             let questions = [];
             snapshot.forEach(doc => {
@@ -72,14 +93,30 @@ class Quiz extends React.Component {
             const endTime = currentState.startTime ?
                             currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :
                             -1;
-            self.setState({currentQuestion : currentState.question,
-                           questionStage   : currentState.questionStage,
-                           endTime         : endTime,});
+            self.setState({currentQuestionId : currentState.question,
+                           currentQuestion   : self.findQuestion(currentState.question),
+                           questionStage     : currentState.questionStage,
+                           endTime           : endTime,
+                           results           : [ currentState.response1
+                                               , currentState.response2
+                                               , currentState.response3
+                                               , currentState.response4 ],
+                           currentStateRef   : snapshot.ref,
+            });
 
             if (self.state.questionStage === constants.QuestionStage.AUDIENCE_ANSWER) {
+                this.setState({ selectedAnswerIdx: -1 });
                 self.beginCountdown();
             } else {
                 self.resetCountdown();
+            }
+
+            if (self.state.selectedAnswerIdx === -1) {
+                for (let responseIdx = 0; responseIdx < self.state.results.length; responseIdx++) {
+                    if (self.state.results[responseIdx].indexOf(self.state.profile.id) !== -1) {
+                        self.setState({ selectedAnswerIdx: responseIdx });
+                    }
+                }
             }
         });
     }
@@ -97,26 +134,125 @@ class Quiz extends React.Component {
                now > end;
     }
 
-    render() {
-        const question = this.state.questions
-            .filter(q => this.state.currentQuestion === q.id);
+    selectAnswer(idx) {
+        // you've already selected an answer
+        if (this.state.selectedAnswerIdx !== -1) {
+            return;
+        }
 
-        const questionText = question.map(q => q.name);
-        const answerKeys = question.map(q => q.answers).flat();
-        const answers = answerKeys
-            .map(p => this.state.people.hasOwnProperty(p) ?
-                      this.state.people[p] : {displayName: "unknown"});
+        // you can no longer select an answer
+        if (this.isOutOfTime()) {
+            return;
+        }
+
+        this.setState({ selectedAnswerIdx: idx });
+        // LOL - doing this because we can't have nested arrays in firestore
+        switch (idx) {
+            case 0:
+                this.state.currentStateRef.update({
+                    response1: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            case 1:
+                this.state.currentStateRef.update({
+                    response2: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            case 2:
+                this.state.currentStateRef.update({
+                    response3: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            case 3:
+                this.state.currentStateRef.update({
+                    response4: FieldValue.arrayUnion(this.state.profile.id)
+                });
+                break;
+            default:
+                // unhandled!
+                break;
+        }
+    }
+
+    renderPlayerCard(profileKey) {
+        let profile = null;
+        for (let i = 0; i < Profiles.length; i++) {
+            if (Profiles[i].id === profileKey) {
+                profile = Profiles[i];
+            }
+        }
+        if (profile === null) {
+            return null;
+        }
+        const profileName = `${profile.firstName}-${profile.lastName}`;
+        return (
+            <div key={profileName} >
+                <img className="results-profile-thumbnail" alt='Avatar' src={profile.img}></img>
+            </div>
+        );
+    }
+
+    renderProfilesForResult(idx) {
+      return (<div className="profile-grid-row">
+        {this.state.results[idx].map(
+          profileKey => <div className="profile-grid-item">{this.renderPlayerCard(profileKey)}</div>
+        )}
+        </div>
+      )
+    }
+
+    renderAnswer(a, idx, animate) {
+        return (
+          <button className={animate ? 'button -quiz-answer -intro -seq' + idx : 'button -quiz-answer'}
+                  onClick={() => this.selectAnswer(idx)}>{a}</button>
+        );
+    }
+
+    renderAnswers(answers, showResults) {
+        if (!answers || answers.length === 0) {
+            return null;
+        }
+        let rendered = [];
+        for (let i = 0; i < answers.length; i++) {
+            rendered.push(
+                <div className="grid-item" key={i}>
+                    {this.renderAnswer(answers[i], i, /* animate in */ !showResults)}
+                    {showResults ? this.renderProfilesForResult(i) : null}
+                </div>
+            );
+            // show an interstitial when there are only 2 choices,
+            // but don't show it in the results section, because it looks weird when
+            // veritcally centered
+            if (!showResults && answers.length === 2 && i === 0) {
+                rendered.push(
+                    <div className="grid-item or-interstitial" key="or">
+                        <p>or</p>
+                    </div>
+                );
+            }
+        }
+        return (
+            <div className={showResults ? "grid-row" : "grid-row -intro"}>
+                {rendered}
+            </div>
+        );
+    }
+
+    render() {
+        const question = this.state.currentQuestion;
+        const questionText = question ? question.name : "";
+        const answers = question ? question.answers : [];
 
         switch (this.state.questionStage) {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
-                        <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-intro question-text">{questionText}</p>
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
-                // weird, probably a hack: injecting lkjCSS variable for countdown time
+                // weird hack: injecting CSS variable for countdown time
                 return (
                     <div>
                         <style>{`
@@ -126,18 +262,17 @@ class Quiz extends React.Component {
                         <div id="countdown-bar"></div>
                         {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
-                        <p className="title-text">Question {wordify(this.state.currentQuestion)}</p>
+                        <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
-                        {answers.map(a => (
-                            <button className={`button -quiz-answer -intro`}>{a.displayName}</button>
-                        ))}
+                        {this.renderAnswers(answers, /* show results */ false)}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:
                 return (
                     <div>
-                        <p>Results (TODO)</p>
-                        <p className="question-text">{questionText}</p>
+                        <p className="title-text">Results</p>
+                        <p className="results-question-text">{questionText}</p>
+                        {this.renderAnswers(answers, /* show results */ true)}
                     </div>
                 );
             default:
