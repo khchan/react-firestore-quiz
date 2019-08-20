@@ -148,6 +148,27 @@
     box-sizing: border-box;
 }
 
+.question-img {
+  width: 100%;
+  height: auto;
+  clip-path: circle(15%);
+}
+
+.question-img-animate {
+  width: 100%;
+  height: auto;
+  animation: question-img-reveal 2s normal;
+}
+
+@keyframes question-img-reveal {
+  0% {
+    clip-path: circle(10%);
+  }
+  100% {
+    clip-path: circle(75%);
+  }
+}
+
 @keyframes bounce-down-from-above {
   0% {
     opacity: .2;

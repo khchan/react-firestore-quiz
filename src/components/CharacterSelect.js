@@ -60,7 +60,7 @@ class CharacterSelect extends React.Component {
         const profileFullName = selectedProfile ? `${selectedProfile.firstName} ${selectedProfile.lastName}` : 'Character Select';
 
         return (
-            <div className='character-select-container container'>
+            <div className='character-select-container'>
                 <h1>{profileFullName}</h1>
                 <input id='search' type='text' className={selectedProfile ? 'hide' : ''}
                        placeholder='Search...' onChange={this.filterProfiles} />

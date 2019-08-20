@@ -56,6 +56,19 @@ class Admin extends React.Component {
         this.setState({ localCountdownSeconds: -1 });
     }
 
+    goToQuestion(questionId) {
+        if (this.state.currentQuestion !== questionId) {
+            this.state.currentStateRef.update({
+                question: questionId, 
+                questionStage: constants.QuestionStage.READ_QUESTION,
+                response1: [],
+                response2: [],
+                response3: [],
+                response4: []
+            });
+        }
+    }
+
     advanceQuestionStage() {
         return () => {
             let payload = {};
@@ -253,19 +266,28 @@ class Admin extends React.Component {
     
     render() {
         const questions = this.state.questions.map(q => {
-            return <li key={q.id}>{this.state.currentQuestion === q.id ? <b>{q.name}</b> : q.name}</li>;
+            const isQuestionSelected = this.state.currentQuestion === q.id;
+            return (
+                <tr key={q.id}>
+                    <td>{isQuestionSelected ? <b>{q.name}</b> : q.name}</td>
+                    <td>
+                        {!isQuestionSelected ? <button onClick={() => this.goToQuestion(q.id)}>Select</button> : null}
+                    </td>
+                </tr>
+            );
         });
 
         return (
             <div>
-                <h2>Question Stage: {constants.questionStageName(this.state.questionStage)}</h2>
-                {this.isCountingDown() ? <p>{this.state.localCountdownSeconds}</p> : null}
+                <h2>
+                    Question {this.state.currentQuestion} - {constants.questionStageName(this.state.questionStage)} {this.isCountingDown() ? this.state.localCountdownSeconds : ''}
+                </h2>
                 {this.isOutOfTime() ? <p>OUT OF TIME</p> : null}
                 <button className={`button -${this.isSelected(constants.SPLASH)}`} onClick={this.stageTransition(constants.SPLASH)}>Splash</button>
                 <button className={`button -${this.isSelected(constants.CHARACTER_SELECT)}`} onClick={this.stageTransition(constants.CHARACTER_SELECT)}>Character Select</button>
                 <button className={`button -${this.isSelected(constants.QUIZ)}`} onClick={this.stageTransition(constants.QUIZ)}>Quiz</button>
                 <button className={`button -${this.isSelected(constants.LEADERBOARD)}`} onClick={this.stageTransition(constants.LEADERBOARD)}>Leaderboard</button>                
-                <ul style={questionList}>{questions}</ul>
+                <table>{questions}</table>
                 <button className={`button -regular`} onClick={this.backtrackQuestionStage()}>Previous</button>
                 <button className={`button -regular`} onClick={this.advanceQuestionStage()}>Next</button>
                 <button className={`button -regular`} onClick={this.resetGameState()}>Reset</button>

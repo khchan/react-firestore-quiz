@@ -17,11 +17,11 @@ function wordify(num) {
 class Quiz extends React.Component {
 
     state = {
+        unsubscribeCallbacks: [],
         currentQuestionId: 1,
         currentQuestion: null,
         questionStage: 0,
         questions: [],
-        people: {},
 
         // local countdown timer state
         endTime: 0, // epoch seconds
@@ -73,14 +73,7 @@ class Quiz extends React.Component {
         const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY)) || MakeUnique(AnonymousProfile);
         self.setState({ profile: profile });
 
-        db.collection("people").onSnapshot(snapshot => {
-            let people = {};
-            snapshot.forEach(doc => {
-                people[doc.id] = doc.data();
-            });
-            self.setState({people : people});
-        }); 
-        db.collection("questions").onSnapshot(snapshot => {
+        const unsubscribeQuestions = db.collection("questions").onSnapshot(snapshot => {
             let questions = [];
             snapshot.forEach(doc => {
                 questions.push(doc.data());
@@ -88,7 +81,7 @@ class Quiz extends React.Component {
             self.setState({questions : questions});
         });
 
-        db.collection("state").doc("current").onSnapshot(snapshot => {
+        const unsubscribeCurrentState = db.collection("state").doc("current").onSnapshot(snapshot => {
             const currentState = snapshot.data();
             const endTime = currentState.startTime ?
                             currentState.startTime.seconds + ANSWER_COUNTDOWN_DURATION :
@@ -119,6 +112,12 @@ class Quiz extends React.Component {
                 }
             }
         });
+
+        this.setState({unsubscribeCallbacks: [unsubscribeQuestions, unsubscribeCurrentState]});
+    }
+
+    componentWillUnmount() {
+        this.state.unsubscribeCallbacks.forEach(cb => cb());
     }
 
     isCountingDown() {
@@ -195,7 +194,7 @@ class Quiz extends React.Component {
     renderProfilesForResult(idx) {
       return (<div className="profile-grid-row">
         {this.state.results[idx].map(
-          profileKey => <div className="profile-grid-item">{this.renderPlayerCard(profileKey)}</div>
+          (profileKey, i) => <div key={`profile-key-${i}`} className="profile-grid-item">{this.renderPlayerCard(profileKey)}</div>
         )}
         </div>
       )
@@ -242,13 +241,14 @@ class Quiz extends React.Component {
         const question = this.state.currentQuestion;
         const questionText = question ? question.name : "";
         const answers = question ? question.answers : [];
-
+        const questionImg = question && question.img ? <img className='question-img' src={question.img}></img> : null;
         switch (this.state.questionStage) {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
                         <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-intro question-text">{questionText}</p>
+                        {questionImg}
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
@@ -264,14 +264,17 @@ class Quiz extends React.Component {
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
+                        {questionImg}
                         {this.renderAnswers(answers, /* show results */ false)}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:
+                const questionImgReveal = question && question.img ? <img className='question-img-animate' src={question.img}></img> : null;
                 return (
                     <div>
                         <p className="title-text">Results</p>
                         <p className="results-question-text">{questionText}</p>
+                        {questionImgReveal}
                         {this.renderAnswers(answers, /* show results */ true)}
                     </div>
                 );

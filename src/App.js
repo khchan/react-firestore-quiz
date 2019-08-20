@@ -39,8 +39,10 @@ class App extends React.Component {
     return (
       <Router>
         <div className="App">
-          <Route path="/" exact component={this.state.component} />
-          <Route path="/admin/" component={Admin} />
+          <div className='container'>
+            <Route path="/" exact component={this.state.component} />
+            <Route path="/admin/" component={Admin} />
+          </div>
         </div>
       </Router>
     );

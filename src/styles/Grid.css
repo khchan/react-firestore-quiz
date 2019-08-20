@@ -1,6 +1,6 @@
 .container {
     max-width: 1440px;
-    margin: 0 auto;
+    margin: 10px;
 }
 
 .grid-row {
@@ -37,6 +37,6 @@
 
 @media(max-width: 375px) {
     .grid-item {
-        flex-basis: 50%;
+        flex-basis: 0;
     }
 }
