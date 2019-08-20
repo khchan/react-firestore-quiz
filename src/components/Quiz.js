@@ -192,18 +192,19 @@ class Quiz extends React.Component {
     }
 
     renderProfilesForResult(idx) {
-      return (<div className="profile-grid-row">
-        {this.state.results[idx].map(
-          (profileKey, i) => <div key={`profile-key-${i}`} className="profile-grid-item">{this.renderPlayerCard(profileKey)}</div>
-        )}
-        </div>
-      )
+      return (
+          <div className="profile-grid-row">
+              {this.state.results[idx].map(
+                  (profileKey, i) => <div key={`profile-key-${i}`} className="profile-grid-item">{this.renderPlayerCard(profileKey)}</div>
+              )}
+          </div>
+      );
     }
 
     renderAnswer(a, idx, animate) {
         return (
-          <button className={animate ? 'button -quiz-answer -intro -seq' + idx : 'button -quiz-answer'}
-                  onClick={() => this.selectAnswer(idx)}>{a}</button>
+            <button className={animate ? 'button -quiz-answer -intro -seq' + idx : 'button -quiz-answer'}
+                    onClick={() => this.selectAnswer(idx)}>{a}</button>
         );
     }
 
@@ -241,23 +242,34 @@ class Quiz extends React.Component {
         const question = this.state.currentQuestion;
         const questionText = question ? question.name : "";
         const answers = question ? question.answers : [];
-        const questionImg = question && question.img ? <img className='question-img' src={question.img}></img> : null;
+        const questionImg = question && question.img ? <img className="question-img" src={question.img}></img> : null;
+        const questionImgMaskSize = question && question.maskSize ? question.maskSize : "15%";
+        const questionImgMaskX = question && question.maskX ? question.maskX : "50%";
+        const questionImgMaskY = question && question.maskY ? question.maskY : "50%";
         switch (this.state.questionStage) {
             case constants.QuestionStage.READ_QUESTION:
                 return (
                     <div>
+                        <style>{`
+                        :root {
+                            --maskSize: ${questionImgMaskSize};
+                            --maskX: ${questionImgMaskX};
+                            --maskY: ${questionImgMaskY};
+                        }`}</style>
                         <p className="question-count-intro title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-intro question-text">{questionText}</p>
                         {questionImg}
                     </div>
                 );
             case constants.QuestionStage.AUDIENCE_ANSWER:
-                // weird hack: injecting CSS variable for countdown time
                 return (
                     <div>
                         <style>{`
                         :root {
                             --countdown: ${this.isCountingDown() ? ANSWER_COUNTDOWN_DURATION + "s" : "0s"};
+                            --maskSize: ${questionImgMaskSize};
+                            --maskX: ${questionImgMaskX};
+                            --maskY: ${questionImgMaskY};
                         }`}</style>
                         <div id="countdown-bar"></div>
                         {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
@@ -272,6 +284,12 @@ class Quiz extends React.Component {
                 const questionImgReveal = question && question.img ? <img className='question-img-animate' src={question.img}></img> : null;
                 return (
                     <div>
+                        <style>{`
+                        :root {
+                            --maskSize: ${questionImgMaskSize};
+                            --maskX: ${questionImgMaskX};
+                            --maskY: ${questionImgMaskY};
+                        }`}</style>
                         <p className="title-text">Results</p>
                         <p className="results-question-text">{questionText}</p>
                         {questionImgReveal}
