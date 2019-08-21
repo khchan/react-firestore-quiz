@@ -1,5 +1,9 @@
 import React from 'react';
 
 export default function Leaderboard() {
-    return <h2>Leaderboard</h2>
+    return (
+        <div className='wedding-backdrop'>
+            <h1 className='title-text'>Thank You For Participating!</h1>
+        </div>
+    )
 }

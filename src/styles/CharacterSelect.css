@@ -24,13 +24,13 @@
     src: url('../fonts/koverwatch.ttf') format('truetype');
 }
 
-h1 {
+.character-select-container h1 {
     font-family: 'Koverwatch';
     font-style: italic;
     color: greenyellow;
 }
 
-h2 {
+.character-select-container h2 {
     font-family: 'Koverwatch';
     font-style: italic;
 }

@@ -31,6 +31,17 @@ body {
   display: none;
 }
 
+.wedding-backdrop {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/wedding-shoe.appspot.com/o/images%2Fsophia-and-carl.png?alt=media&token=d21220c0-f8e3-4ea0-a5c9-292f80c8f82d');
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

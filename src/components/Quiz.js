@@ -202,9 +202,11 @@ class Quiz extends React.Component {
     }
 
     renderAnswer(a, idx, animate) {
+        const buttonAnimate = animate ? '-quiz-answer -intro -seq' + idx : '-quiz-answer';
+        const isAnswerSelected = this.state.selectedAnswerIdx == idx ? '-selected' : '';
         return (
-            <button className={animate ? 'button -quiz-answer -intro -seq' + idx : 'button -quiz-answer'}
-                    onClick={() => this.selectAnswer(idx)}>{a}</button>
+          <button className={`button ${buttonAnimate} ${isAnswerSelected}`}
+                  onClick={() => this.selectAnswer(idx)}>{a}</button>
         );
     }
 
