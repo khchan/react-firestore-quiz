@@ -215,7 +215,7 @@ class Quiz extends React.Component {
         let rendered = [];
         for (let i = 0; i < answers.length; i++) {
             rendered.push(
-                <div className="grid-item" key={i}>
+                <div className="answer-grid-item" key={i}>
                     {this.renderAnswer(answers[i], i, questionStage)}
                     {showResults ? this.renderProfilesForResult(i) : null}
                 </div>
@@ -225,14 +225,14 @@ class Quiz extends React.Component {
             // veritcally centered
             if (!showResults && answers.length === 2 && i === 0) {
                 rendered.push(
-                    <div className="grid-item or-interstitial" key="or">
+                    <div className="answer-grid-item or-interstitial" key="or">
                         <p>or</p>
                     </div>
                 );
             }
         }
         return (
-            <div className={showResults ? "grid-row" : "grid-row -intro"}>
+            <div className={showResults ? "answer-grid-row" : "answer-grid-row -intro"}>
                 {rendered}
             </div>
         );
