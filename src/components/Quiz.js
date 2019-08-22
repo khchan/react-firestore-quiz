@@ -50,6 +50,7 @@ class Quiz extends React.Component {
 
         this.setState({
             localCountdownIntervalID: localCountdownIntervalID,
+            localCountdownSeconds: ANSWER_COUNTDOWN_DURATION,
         });
     }
 

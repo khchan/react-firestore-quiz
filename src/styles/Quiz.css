@@ -92,7 +92,13 @@
   font-size: calc(16px + 2vmin);
   border-radius: 0px;
   border: calc(1px + 0.1vmin) solid #000; 
+  background-color: #fff;
   text-transform: none;
+}
+
+.button.-quiz-answer.-selected {
+    color: var(--color-snow);
+    background-color: var(--color-grass);
 }
 
 .button.-quiz-answer.-intro {
