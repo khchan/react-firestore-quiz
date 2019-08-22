@@ -50,6 +50,7 @@ class Quiz extends React.Component {
 
         this.setState({
             localCountdownIntervalID: localCountdownIntervalID,
+            localCountdownSeconds: ANSWER_COUNTDOWN_DURATION,
         });
     }
 
@@ -133,14 +134,9 @@ class Quiz extends React.Component {
                now > end;
     }
 
-    selectAnswer(idx) {
-        // you've already selected an answer
-        if (this.state.selectedAnswerIdx !== -1) {
-            return;
-        }
-
+    selectAnswer(idx, questionStage) {
         // you can no longer select an answer
-        if (this.isOutOfTime()) {
+        if (this.isOutOfTime() || questionStage === constants.QuestionStage.READ_RESULTS) {
             return;
         }
 
@@ -201,24 +197,26 @@ class Quiz extends React.Component {
       );
     }
 
-    renderAnswer(a, idx, animate) {
-        const buttonAnimate = animate ? '-quiz-answer -intro -seq' + idx : '-quiz-answer';
+    renderAnswer(a, idx, questionStage) {
+        const buttonAnimate = questionStage == constants.QuestionStage.AUDIENCE_ANSWER
+                            ? '-quiz-answer -intro -seq' + idx : '-quiz-answer';
         const isAnswerSelected = this.state.selectedAnswerIdx == idx ? '-selected' : '';
         return (
           <button className={`button ${buttonAnimate} ${isAnswerSelected}`}
-                  onClick={() => this.selectAnswer(idx)}>{a}</button>
+                  onClick={() => this.selectAnswer(idx, questionStage)}>{a}</button>
         );
     }
 
-    renderAnswers(answers, showResults) {
+    renderAnswers(answers, questionStage) {
         if (!answers || answers.length === 0) {
             return null;
         }
+        const showResults = questionStage == constants.QuestionStage.READ_RESULTS;
         let rendered = [];
         for (let i = 0; i < answers.length; i++) {
             rendered.push(
-                <div className="grid-item" key={i}>
-                    {this.renderAnswer(answers[i], i, /* animate in */ !showResults)}
+                <div className="answer-grid-item" key={i}>
+                    {this.renderAnswer(answers[i], i, questionStage)}
                     {showResults ? this.renderProfilesForResult(i) : null}
                 </div>
             );
@@ -227,14 +225,14 @@ class Quiz extends React.Component {
             // veritcally centered
             if (!showResults && answers.length === 2 && i === 0) {
                 rendered.push(
-                    <div className="grid-item or-interstitial" key="or">
+                    <div className="answer-grid-item or-interstitial" key="or">
                         <p>or</p>
                     </div>
                 );
             }
         }
         return (
-            <div className={showResults ? "grid-row" : "grid-row -intro"}>
+            <div className={showResults ? "answer-grid-row" : "answer-grid-row -intro"}>
                 {rendered}
             </div>
         );
@@ -279,7 +277,7 @@ class Quiz extends React.Component {
                         <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
                         {questionImg}
-                        {this.renderAnswers(answers, /* show results */ false)}
+                        {this.renderAnswers(answers, this.state.questionStage)}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:
@@ -295,7 +293,7 @@ class Quiz extends React.Component {
                         <p className="title-text">Results</p>
                         <p className="results-question-text">{questionText}</p>
                         {questionImgReveal}
-                        {this.renderAnswers(answers, /* show results */ true)}
+                        {this.renderAnswers(answers, this.state.questionStage)}
                     </div>
                 );
             default:

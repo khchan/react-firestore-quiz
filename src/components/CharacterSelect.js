@@ -44,7 +44,7 @@ class CharacterSelect extends React.Component {
         const profileName = `${profile.firstName}-${profile.lastName}`;
         const profileSelected = this.isCharacterSelected(profile) ? 'profile-img card-img-pulsate' : 'profile-img';
         const nameOrReadyText = this.isCharacterSelected(profile) ? 
-            <h2 className='selected-profile-name'>READY</h2> : <span>{profile.firstName} {profile.lastName}</span>;
+            <h2 className='selected-profile-name'>Waiting for other players...</h2> : <span>{profile.firstName} {profile.lastName}</span>;
 
         return (
             <div className="grid-item" key={profileName} onClick={() => this.toggleCharacterSelect(profile)}>
@@ -57,7 +57,7 @@ class CharacterSelect extends React.Component {
 
     render() {
         const selectedProfile = this.state.selectedProfile;
-        const profileFullName = selectedProfile ? `${selectedProfile.firstName} ${selectedProfile.lastName}` : 'Character Select';
+        const profileFullName = selectedProfile ? `${selectedProfile.firstName} ${selectedProfile.lastName}` : 'Choose your character';
 
         return (
             <div className='character-select-container'>
