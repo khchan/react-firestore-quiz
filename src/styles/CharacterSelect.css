@@ -27,7 +27,7 @@
 .character-select-container h1 {
     font-family: 'Koverwatch';
     font-style: italic;
-    color: greenyellow;
+    text-shadow: 2px 2px #161616;
 }
 
 .character-select-container h2 {
