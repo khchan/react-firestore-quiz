@@ -1,0 +1,49 @@
+@font-face {
+  font-family: 'Basic Serif';
+  font-style: normal;
+  src: url('../fonts/Chunkfive.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Sophia Sans';
+  font-style: normal;
+  src: url('../fonts/sacramento.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Carl Sans';
+  font-style: normal;
+  src: url('../fonts/Please write me a song.ttf') format('truetype');
+}
+
+#do-you-know {
+  font-family: 'Basic Serif';
+  display: block;
+}
+
+#and {
+  font-family: 'Basic Serif';
+  font-size: calc(8px + 2vmin);
+  display: inline-block;
+}
+
+#carl {
+  font-family: 'Carl Sans';
+  color: var(--color-ocean);
+  display: inline-block;
+  transform: rotate(3deg);
+}
+
+#sophia {
+  font-family: 'Sophia Sans';
+  color: var(--color-salmon);
+  display: inline-block;
+  transform: rotate(-3deg);
+}
+
+#question-mark {
+}
+
+.splash {
+  text-shadow: 2px 2px #161616;
+}
