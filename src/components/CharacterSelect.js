@@ -57,7 +57,7 @@ class CharacterSelect extends React.Component {
 
     render() {
         const selectedProfile = this.state.selectedProfile;
-        const profileFullName = selectedProfile ? `${selectedProfile.firstName} ${selectedProfile.lastName}` : 'Character Select';
+        const profileFullName = selectedProfile ? `${selectedProfile.firstName} ${selectedProfile.lastName}` : 'Choose your character';
 
         return (
             <div className='character-select-container'>
