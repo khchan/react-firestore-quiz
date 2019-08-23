@@ -204,6 +204,7 @@ class Admin extends React.Component {
             snapshot.forEach(doc => {
                 questions.push(doc.data());
             });
+            questions.sort( ( a, b ) => { return a.id - b.id } );
             self.setState({questions : questions});
         });
 
