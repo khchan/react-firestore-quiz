@@ -321,7 +321,7 @@ class Quiz extends React.Component {
                             --maskY: ${questionImgMaskY};
                         }`}</style>
                         <p className="title-text">Results</p>
-                        <p className="results-question-text">{questionText}</p>
+                        <p className="question-text">{questionText}</p>
                         {questionImgReveal}
                         {this.renderAnswers(answers, this.state.questionStage)}
                     </div>
