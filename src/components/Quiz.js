@@ -31,8 +31,24 @@ class Quiz extends React.Component {
         profile: null,
         selectedAnswerIdx: -1,
         results: [],
+        preloadedImages: {},
 
         currentStateRef: null,
+    }
+
+    preloadImages() {
+        // all hardcoded images
+        let urls = [
+          "https://firebasestorage.googleapis.com/v0/b/wedding-shoe.appspot.com/o/images%2Fcarl-gym-question.jpg?alt=media&token=9a3c3c40-79cb-448e-993a-9cc990698415",
+          "https://firebasestorage.googleapis.com/v0/b/wedding-shoe.appspot.com/o/images%2Fcarl_or_shaolin_master_4.jpg?alt=media&token=ac8d271a-398f-4305-81f8-a0343051186b",
+          "https://firebasestorage.googleapis.com/v0/b/wedding-shoe.appspot.com/o/images%2Fcarl_or_shaolin_master_5.jpg?alt=media&token=26af9231-471a-402b-b27a-f69f8c8ab570",
+          "https://firebasestorage.googleapis.com/v0/b/wedding-shoe.appspot.com/o/images%2Fcarl_or_shaolin_master_6.jpg?alt=media&token=75324ace-5c10-40da-8363-270dc51566e5",
+        ];
+        let preloadedImages = {};
+        urls.forEach(url => {
+            preloadedImages[url] = <img className="question-img" src={url} />;
+        });
+        this.setState({ preloadedImages: preloadedImages });
     }
 
     beginCountdown() {
@@ -70,6 +86,7 @@ class Quiz extends React.Component {
 
     componentDidMount() {
         let self = this;
+        self.preloadImages();
 
         const profile = JSON.parse(localStorage.getItem(SELECTED_PROFILE_LS_KEY)) || MakeUnique(AnonymousProfile);
         self.setState({ profile: profile });
@@ -146,22 +163,34 @@ class Quiz extends React.Component {
         switch (idx) {
             case 0:
                 this.state.currentStateRef.update({
-                    response1: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayUnion(this.state.profile.id),
+                    response2: FieldValue.arrayRemove(this.state.profile.id),
+                    response3: FieldValue.arrayRemove(this.state.profile.id),
+                    response4: FieldValue.arrayRemove(this.state.profile.id),
                 });
                 break;
             case 1:
                 this.state.currentStateRef.update({
-                    response2: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayRemove(this.state.profile.id),
+                    response2: FieldValue.arrayUnion(this.state.profile.id),
+                    response3: FieldValue.arrayRemove(this.state.profile.id),
+                    response4: FieldValue.arrayRemove(this.state.profile.id),
                 });
                 break;
             case 2:
                 this.state.currentStateRef.update({
-                    response3: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayRemove(this.state.profile.id),
+                    response2: FieldValue.arrayRemove(this.state.profile.id),
+                    response3: FieldValue.arrayUnion(this.state.profile.id),
+                    response4: FieldValue.arrayRemove(this.state.profile.id),
                 });
                 break;
             case 3:
                 this.state.currentStateRef.update({
-                    response4: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayRemove(this.state.profile.id),
+                    response2: FieldValue.arrayRemove(this.state.profile.id),
+                    response3: FieldValue.arrayRemove(this.state.profile.id),
+                    response4: FieldValue.arrayUnion(this.state.profile.id),
                 });
                 break;
             default:
@@ -239,14 +268,26 @@ class Quiz extends React.Component {
         );
     }
 
+    getQuestionImg(question) {
+       if (question && question.img) {
+          if (this.state.preloadedImages[question.img]) {
+              return this.state.preloadedImages[question.img];
+          } else {
+              return <img className="question-img" src={question.img} />;
+          }
+       }
+       return null;
+    }
+
     render() {
         const question = this.state.currentQuestion;
         const questionText = question ? question.name : "";
         const answers = question ? question.answers : [];
-        const questionImg = question && question.img ? <img className="question-img" src={question.img}></img> : null;
+        const questionImg = this.getQuestionImg(question);
         const questionImgMaskSize = question && question.maskSize ? question.maskSize : "15%";
         const questionImgMaskX = question && question.maskX ? question.maskX : "50%";
         const questionImgMaskY = question && question.maskY ? question.maskY : "50%";
+
         switch (this.state.questionStage) {
             case constants.QuestionStage.READ_QUESTION:
                 return (
@@ -272,13 +313,13 @@ class Quiz extends React.Component {
                             --maskX: ${questionImgMaskX};
                             --maskY: ${questionImgMaskY};
                         }`}</style>
-                        <div id="countdown-bar"></div>
-                        {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
-                        {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                         <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
                         {questionImg}
                         {this.renderAnswers(answers, this.state.questionStage)}
+                        <div id="countdown-bar"></div>
+                        {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
+                        {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:
@@ -292,7 +333,7 @@ class Quiz extends React.Component {
                             --maskY: ${questionImgMaskY};
                         }`}</style>
                         <p className="title-text">Results</p>
-                        <p className="results-question-text">{questionText}</p>
+                        <p className="question-text">{questionText}</p>
                         {questionImgReveal}
                         {this.renderAnswers(answers, this.state.questionStage)}
                     </div>
@@ -306,7 +347,7 @@ class Quiz extends React.Component {
                     </div>
                 );
         }
-    }  
+    }
 }
 
 export default Quiz;

@@ -30,7 +30,7 @@ class Admin extends React.Component {
         localCountdownSeconds: -1,
         localCountdownIntervalID: -1,
 
-        unsubscribeCallbacks: []
+        unsubscribeCallbacks: [],
     }
 
     beginCountdown() {
