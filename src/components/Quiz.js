@@ -3,7 +3,7 @@ import '../styles/Quiz.css';
 import '../styles/Grid.css';
 import {db, FieldValue} from '../firebase.js';
 import * as constants from '../constants/Stages.js';
-import {MakeUnique, AnonymousProfile, Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
+import {MakeUnique, IsAnonymousId, AnonymousProfile, Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 const ANSWER_COUNTDOWN_DURATION = 30; // in seconds, TODO make me tunable per question
 
@@ -201,9 +201,13 @@ class Quiz extends React.Component {
 
     renderPlayerCard(profileKey) {
         let profile = null;
-        for (let i = 0; i < Profiles.length; i++) {
-            if (Profiles[i].id === profileKey) {
-                profile = Profiles[i];
+        if (IsAnonymousId(profileKey)) {
+            profile = AnonymousProfile;
+        } else {
+            for (let i = 0; i < Profiles.length; i++) {
+                if (Profiles[i].id === profileKey) {
+                    profile = Profiles[i];
+                }
             }
         }
         if (profile === null) {
