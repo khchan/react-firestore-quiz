@@ -163,22 +163,34 @@ class Quiz extends React.Component {
         switch (idx) {
             case 0:
                 this.state.currentStateRef.update({
-                    response1: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayUnion(this.state.profile.id),
+                    response2: FieldValue.arrayRemove(this.state.profile.id),
+                    response3: FieldValue.arrayRemove(this.state.profile.id),
+                    response4: FieldValue.arrayRemove(this.state.profile.id),
                 });
                 break;
             case 1:
                 this.state.currentStateRef.update({
-                    response2: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayRemove(this.state.profile.id),
+                    response2: FieldValue.arrayUnion(this.state.profile.id),
+                    response3: FieldValue.arrayRemove(this.state.profile.id),
+                    response4: FieldValue.arrayRemove(this.state.profile.id),
                 });
                 break;
             case 2:
                 this.state.currentStateRef.update({
-                    response3: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayRemove(this.state.profile.id),
+                    response2: FieldValue.arrayRemove(this.state.profile.id),
+                    response3: FieldValue.arrayUnion(this.state.profile.id),
+                    response4: FieldValue.arrayRemove(this.state.profile.id),
                 });
                 break;
             case 3:
                 this.state.currentStateRef.update({
-                    response4: FieldValue.arrayUnion(this.state.profile.id)
+                    response1: FieldValue.arrayRemove(this.state.profile.id),
+                    response2: FieldValue.arrayRemove(this.state.profile.id),
+                    response3: FieldValue.arrayRemove(this.state.profile.id),
+                    response4: FieldValue.arrayUnion(this.state.profile.id),
                 });
                 break;
             default:

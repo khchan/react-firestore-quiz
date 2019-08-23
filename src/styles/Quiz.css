@@ -96,8 +96,19 @@
 }
 
 .button.-quiz-answer.-selected {
+  color: var(--color-smoke);
+  background-color: var(--color-dark);
+  border-color: var(--color-smoke);
+}
+
+.button.-quiz-answer.-correct {
     color: var(--color-snow);
     background-color: var(--color-grass);
+}
+
+.button.-quiz-answer.-incorrect {
+    color: var(--color-smoke);
+    background-color: var(--color-dark);
 }
 
 .button.-quiz-answer.-intro {
