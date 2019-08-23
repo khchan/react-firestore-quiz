@@ -46,7 +46,7 @@ class Quiz extends React.Component {
         ];
         let preloadedImages = {};
         urls.forEach(url => {
-            preloadedImages[url] = <img className="question-img" src={url} />;
+            preloadedImages[url] = <img className="question-img" src={url} alt="preloaded"/>;
         });
         this.setState({ preloadedImages: preloadedImages });
     }
@@ -227,26 +227,31 @@ class Quiz extends React.Component {
       );
     }
 
-    renderAnswer(a, idx, questionStage) {
-        const buttonAnimate = questionStage == constants.QuestionStage.AUDIENCE_ANSWER
+    renderAnswer(a, idx, questionStage, question) {
+        const buttonAnimate = questionStage === constants.QuestionStage.AUDIENCE_ANSWER
                             ? '-quiz-answer -intro -seq' + idx : '-quiz-answer';
-        const isAnswerSelected = this.state.selectedAnswerIdx == idx ? '-selected' : '';
+        const isAnswerSelected =
+          questionStage === constants.QuestionStage.AUDIENCE_ANSWER && this.state.selectedAnswerIdx === idx
+          ? '-selected' : '';
+        const isAnswerCorrect =
+          questionStage === constants.QuestionStage.READ_RESULTS && (idx === question.correct || question.correct === -1)
+          ? '-correct' : '';
         return (
-          <button className={`button ${buttonAnimate} ${isAnswerSelected}`}
+          <button className={`button ${buttonAnimate} ${isAnswerSelected} ${isAnswerCorrect}`}
                   onClick={() => this.selectAnswer(idx, questionStage)}>{a}</button>
         );
     }
 
-    renderAnswers(answers, questionStage) {
+    renderAnswers(answers, questionStage, question) {
         if (!answers || answers.length === 0) {
             return null;
         }
-        const showResults = questionStage == constants.QuestionStage.READ_RESULTS;
+        const showResults = questionStage === constants.QuestionStage.READ_RESULTS;
         let rendered = [];
         for (let i = 0; i < answers.length; i++) {
             rendered.push(
                 <div className="answer-grid-item" key={i}>
-                    {this.renderAnswer(answers[i], i, questionStage)}
+                    {this.renderAnswer(answers[i], i, questionStage, question)}
                     {showResults ? this.renderProfilesForResult(i) : null}
                 </div>
             );
@@ -273,7 +278,7 @@ class Quiz extends React.Component {
           if (this.state.preloadedImages[question.img]) {
               return this.state.preloadedImages[question.img];
           } else {
-              return <img className="question-img" src={question.img} />;
+              return <img className="question-img" src={question.img} alt="postloaded" />;
           }
        }
        return null;
@@ -316,14 +321,14 @@ class Quiz extends React.Component {
                         <p className="title-text">Question {wordify(this.state.currentQuestionId)}</p>
                         <p className="question-text">{questionText}</p>
                         {questionImg}
-                        {this.renderAnswers(answers, this.state.questionStage)}
+                        {this.renderAnswers(answers, this.state.questionStage, question)}
                         <div id="countdown-bar"></div>
                         {this.isCountingDown() ? <p className="countdown-text">{this.state.localCountdownSeconds}</p> : null}
                         {this.isOutOfTime() ? <p className="countdown-text">Yer outta time!</p> : null}
                     </div>
                 );
             case constants.QuestionStage.READ_RESULTS:
-                const questionImgReveal = question && question.img ? <img className='question-img-animate' src={question.img}></img> : null;
+                const questionImgReveal = question && question.img ? <img className='question-img-animate' src={question.img} alt="reveal" /> : null;
                 return (
                     <div>
                         <style>{`
@@ -335,7 +340,7 @@ class Quiz extends React.Component {
                         <p className="title-text">Results</p>
                         <p className="question-text">{questionText}</p>
                         {questionImgReveal}
-                        {this.renderAnswers(answers, this.state.questionStage)}
+                        {this.renderAnswers(answers, this.state.questionStage, question)}
                     </div>
                 );
             default:
