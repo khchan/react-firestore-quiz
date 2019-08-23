@@ -41,6 +41,10 @@ export function MakeUnique(profile) {
     return profile;
 }
 
+export function IsAnonymous(profile) {
+    return profile.id.startsWith(AnonymousProfile.id);
+}
+
 export const AnonymousProfile = {
     firstName: 'Anonymous',
     lastName: '',
