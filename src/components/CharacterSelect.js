@@ -3,7 +3,7 @@ import '../styles/Buttons.css';
 import '../styles/CharacterSelect.css';
 import '../styles/Grid.css';
 import CharacterCard from './CharacterCard.js';
-import { Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
+import { MakeUnique, IsAnonymous, Profiles, SELECTED_PROFILE_LS_KEY } from '../constants/Profiles.js';
 
 class CharacterSelect extends React.Component {
 
@@ -17,7 +17,13 @@ class CharacterSelect extends React.Component {
     }
 
     isCharacterSelected(profile) {
-        return this.state.selectedProfile && (this.state.selectedProfile.id === profile.id);
+        if (!this.state.selectedProfile) {
+            return false;
+        }
+
+        const sameId = this.state.selectedProfile.id === profile.id;
+        const bothAnonymous = IsAnonymous(this.state.selectedProfile) && IsAnonymous(profile);
+        return sameId || bothAnonymous;
     }
 
     toggleCharacterSelect(profile) {
@@ -25,8 +31,9 @@ class CharacterSelect extends React.Component {
             this.setState({ selectedProfile: null, profiles: Profiles });
             localStorage.removeItem(SELECTED_PROFILE_LS_KEY);
         } else {
-            this.setState({ selectedProfile: profile, profiles: [profile] });
-            localStorage.setItem(SELECTED_PROFILE_LS_KEY, JSON.stringify(profile));
+            let uniqueProfile = MakeUnique(profile);
+            this.setState({ selectedProfile: profile, profiles: [uniqueProfile] });
+            localStorage.setItem(SELECTED_PROFILE_LS_KEY, JSON.stringify(uniqueProfile));
         }
     }
 
