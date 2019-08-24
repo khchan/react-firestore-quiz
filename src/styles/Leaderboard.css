@@ -1,0 +1,8 @@
+#leaderboard .leaderboard-name {
+    font-family: 'Question Serif';
+    padding-left: 10px;
+}
+
+#leaderboard tr:nth-child(-n+1) .leaderboard-name {
+    color: var(--color-grass);
+}
